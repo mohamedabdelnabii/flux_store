@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1000517289635",
+    "project_id": "e-commerce-ecf14",
+    "storage_bucket": "e-commerce-ecf14.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000517289635:android:c7ba68f79b8afe5d312116",
+        "android_client_info": {
+          "package_name": "com.example.flux_store"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkGUGrrFJJ1GiafJwAQrp9654hsCu4v14"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
