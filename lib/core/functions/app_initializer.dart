@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flux_store/core/di/dependency_injection.dart';
 import 'package:flux_store/core/helpers/app_constants.dart';
@@ -20,8 +22,7 @@ import 'package:flux_store/core/services/push_notification_service.dart';
 import 'package:flux_store/features/home/presentation/cubit/notifications_cubit.dart';
 import 'package:flux_store/features/home/data/models/notification_model.dart';
 import 'package:flux_store/core/helpers/notification_logic_helper.dart';
-
-// import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -32,19 +33,46 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       Hive.registerAdapter(NotificationModelAdapter());
     }
     final box = await Hive.openBox<NotificationModel>('notifications_box');
+    final title =
+        message.notification?.title ??
+        message.data['title']?.toString() ??
+        'Flux Store';
+    final body =
+        message.notification?.body ?? message.data['body']?.toString() ?? '';
+
     final notification = NotificationModel(
       id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      title:
-          message.notification?.title ??
-          message.data['title'] ??
-          'Notification',
-      body: message.notification?.body ?? message.data['body'] ?? '',
+      title: title,
+      body: body,
       timestamp: DateTime.now().toString().substring(11, 16),
       type: message.data['type']?.toString() ?? 'system',
       isRead: false,
       payload: message.data,
     );
     await box.put(notification.id, notification);
+
+    // Show local notification so it's visible even when app is closed
+    final localNotifications = FlutterLocalNotificationsPlugin();
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'flux_store_channel',
+      'Flux Store Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      showWhen: true,
+      icon: 'ic_notification',
+    );
+    const platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: DarwinNotificationDetails(),
+    );
+
+    await localNotifications.show(
+      DateTime.now().millisecondsSinceEpoch % 2147483647,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: json.encode(message.data),
+    );
   } catch (e) {
     debugPrint("Background notification handler failed: $e");
   }
@@ -56,7 +84,6 @@ class AppInitializer {
     await initializeHiveServices();
     await ScreenUtil.ensureScreenSize();
     await setupGetIt();
-    //    await getIt<CountryService>().clearCountry();
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     Bloc.observer = CustomBlocObserver();
 
@@ -130,13 +157,17 @@ class AppInitializer {
   }
 
   static void _saveNotification(RemoteMessage message) {
+    final title =
+        message.notification?.title ??
+        message.data['title']?.toString() ??
+        'Flux Store';
+    final body =
+        message.notification?.body ?? message.data['body']?.toString() ?? '';
+
     final notification = NotificationModel(
       id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      title:
-          message.notification?.title ??
-          message.data['title'] ??
-          'Notification',
-      body: message.notification?.body ?? message.data['body'] ?? '',
+      title: title,
+      body: body,
       timestamp: DateTime.now().toString().substring(11, 16), // HH:mm
       type: message.data['type']?.toString() ?? 'system',
       isRead: false,
@@ -160,17 +191,17 @@ class AppInitializer {
     }
   }
 
-  // static Future<void> initFirebase() async {
-  //   await Firebase.initializeApp(
-  //     options: DefaultFirebaseOptions.currentPlatform,
-  //   );
-  //   FlutterError.onError = (errorDetails) {
-  //     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  //   };
-  //
-  //   PlatformDispatcher.instance.onError = (error, stack) {
-  //     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  //     return true;
-  //   };
-  // }
+  static Future<void> initFirebase() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  }
 }
