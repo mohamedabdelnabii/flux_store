@@ -21,45 +21,47 @@ class WishlistCubit extends Cubit<WishlistState> {
     this._removeFromWishlistUseCase,
     this._notificationsCubit,
     this._pushService,
-  ) : super(const WishlistState.initial());
+  ) : super(const WishlistState());
 
   Future<void> getWishlist() async {
-    emit(const WishlistState.loading());
+    emit(state.copyWith(isLoading: true, error: null));
     final response = await _getWishlistUseCase();
     response.when(
       success: (wishlistResponse) {
-        emit(WishlistState.success(wishlistResponse));
+        emit(
+          state.copyWith(isLoading: false, wishlistResponse: wishlistResponse),
+        );
       },
       failure: (error) {
-        emit(WishlistState.error(error: error.message ?? ""));
+        emit(state.copyWith(isLoading: false, error: error.message ?? ""));
       },
     );
   }
 
   Future<void> toggleWishlist(
     String productId,
-    bool currentlyInWishlist,
-  ) async {
-    final currentState = state;
-
-    final oldResponse = currentState.maybeWhen(
-      success: (wishlistResponse) => wishlistResponse,
-      orElse: () => null,
-    );
+    bool currentlyInWishlist, {
+    ProductModel? product,
+  }) async {
+    final oldResponse = state.wishlistResponse;
 
     if (oldResponse == null) {
       await getWishlist();
       return;
     }
 
-    final oldList = oldResponse.data ?? [];
+    final oldList = oldResponse.products ?? [];
 
     // Optimistic Update
     final newList = List<ProductModel>.from(oldList);
     if (currentlyInWishlist) {
       newList.removeWhere((item) => item.id == productId);
     } else {
-      newList.add(ProductModel(id: productId));
+      if (product != null) {
+        newList.add(product);
+      } else {
+        newList.add(ProductModel(id: productId));
+      }
     }
 
     final optimisticResponse = WishlistResponse(
@@ -68,7 +70,7 @@ class WishlistCubit extends Cubit<WishlistState> {
       data: newList,
     );
 
-    emit(WishlistState.success(optimisticResponse));
+    emit(state.copyWith(wishlistResponse: optimisticResponse));
 
     final response = currentlyInWishlist
         ? await _removeFromWishlistUseCase(productId)
@@ -86,7 +88,7 @@ class WishlistCubit extends Cubit<WishlistState> {
         }
       },
       failure: (error) {
-        emit(WishlistState.success(oldResponse));
+        emit(state.copyWith(wishlistResponse: oldResponse));
       },
     );
   }

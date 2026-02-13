@@ -42,16 +42,25 @@ class _CartViewBodyState extends State<CartViewBody> {
         Expanded(
           child: BlocBuilder<CartCubit, CartState>(
             builder: (context, state) {
-              return state.maybeWhen(
-                success: (cartResponse) =>
-                    _buildCartList(context, cartResponse, s),
-                initial: () => _buildEmptyCart(s, context),
-                loading: () => const CartShimmer(),
-                error: (error) => Center(
+              final isLoading = state.isLoading;
+              final cartResponse = state.cartResponse;
+              final error = state.error;
+
+              if (error != null && cartResponse == null) {
+                return Center(
                   child: Text(error.isNotEmpty ? error : s.errorOccurred),
-                ),
-                orElse: () => _buildEmptyCart(s, context),
-              );
+                );
+              }
+
+              if (isLoading && cartResponse == null) {
+                return const CartShimmer();
+              }
+
+              if (cartResponse == null) {
+                return _buildEmptyCart(s, context);
+              }
+
+              return _buildCartList(context, cartResponse, s);
             },
           ),
         ),
@@ -118,10 +127,16 @@ class _CartViewBodyState extends State<CartViewBody> {
                   item.product?.id ?? '',
                   (item.count ?? 0) + 1,
                 ),
-                onDecrement: () => cartCubit.updateQuantity(
-                  item.product?.id ?? '',
-                  (item.count ?? 0) - 1,
-                ),
+                onDecrement: () {
+                  if ((item.count ?? 0) > 1) {
+                    cartCubit.updateQuantity(
+                      item.product?.id ?? '',
+                      (item.count ?? 0) - 1,
+                    );
+                  } else {
+                    cartCubit.removeFromCart(item.product?.id ?? '');
+                  }
+                },
                 onDelete: () =>
                     cartCubit.removeFromCart(item.product?.id ?? ''),
               );

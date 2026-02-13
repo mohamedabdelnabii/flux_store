@@ -19,8 +19,9 @@ class WishlistRepositoryImpl implements WishlistRepository {
 
       // Update local cache
       await _wishlistBox.clear();
-      if (response.data != null) {
-        for (var product in response.data!) {
+      final products = response.products;
+      if (products != null) {
+        for (var product in products) {
           await _wishlistBox.put(product.id, product);
         }
       }
@@ -47,9 +48,10 @@ class WishlistRepositoryImpl implements WishlistRepository {
       final response = await _apiService.addToWishlist(productId);
 
       // Sync local cache after adding
-      if (response.data != null) {
+      final products = response.products;
+      if (products != null) {
         await _wishlistBox.clear();
-        for (var product in response.data!) {
+        for (var product in products) {
           await _wishlistBox.put(product.id, product);
         }
       }
@@ -67,9 +69,10 @@ class WishlistRepositoryImpl implements WishlistRepository {
 
       // Sync local cache after removal
       await _wishlistBox.delete(id);
-      if (response.data != null) {
+      final products = response.products;
+      if (products != null) {
         await _wishlistBox.clear();
-        for (var product in response.data!) {
+        for (var product in products) {
           await _wishlistBox.put(product.id, product);
         }
       }
