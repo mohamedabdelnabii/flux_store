@@ -28,6 +28,10 @@ class _SearchViewBodyState extends State<SearchViewBody> {
   void initState() {
     super.initState();
     _loadHistory();
+    // Load default products for "Popular this week"
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SearchCubit>().search();
+    });
   }
 
   Future<void> _loadHistory() async {
@@ -124,67 +128,82 @@ class _SearchViewBodyState extends State<SearchViewBody> {
 
             vGap(20.h),
 
-            CustomTextRow(title: s.popularThisWeek, subTitle: s.showAll),
+            CustomTextRow(
+              title: s.popularThisWeek,
+              subTitle: s.showAll,
+              onTap: () {
+                context.read<SearchCubit>().search();
+              },
+            ),
             vGap(10.h),
 
             BlocBuilder<SearchCubit, SearchState>(
               builder: (context, state) {
-                return state.maybeWhen(
-                  loading: (_, __, ___, ____, _____) =>
-                      const ProductGridShimmer(),
-                  success: (searchResponse, _, __, ___, ____, _____) {
-                    final products = searchResponse.products ?? [];
-                    if (products.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.search_off,
-                              size: 80.sp,
-                              color: AppColors.grey,
-                            ),
-                            vGap(16.h),
-                            Text(
-                              "No results found",
-                              style: AppTextStyles.font16BlackBold,
-                            ),
-                            Text(
-                              "Try checking your spelling or use different keywords",
-                              style: AppTextStyles.font14GreyRegular,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
+                final isLoading = state.isLoading;
+                final searchResponse = state.searchResponse;
+                final isQueryEmpty = (state.query ?? "").isEmpty;
+
+                if (isLoading && searchResponse == null) {
+                  return const ProductGridShimmer();
+                }
+
+                if (searchResponse != null) {
+                  final products = searchResponse.products ?? [];
+
+                  if (products.isEmpty) {
+                    return _buildNoResults(isLoading, s);
+                  }
+
+                  // If query is empty, only show top 4 as "Popular"
+                  final displayProducts = isQueryEmpty
+                      ? products.take(4).toList()
+                      : products;
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: displayProducts.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.h,
+                      childAspectRatio: 0.62,
+                    ),
+                    itemBuilder: (context, index) {
+                      final item = displayProducts[index];
+                      return ProductCard(
+                        image: item.imageCover ?? '',
+                        title: item.title ?? '',
+                        price: (item.price ?? 0).toDouble(),
+                        id: item.id,
                       );
-                    }
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: products.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12.w,
-                        mainAxisSpacing: 12.h,
-                        childAspectRatio: 0.62,
-                      ),
-                      itemBuilder: (context, index) {
-                        final item = products[index];
-                        return ProductCard(
-                          image: item.imageCover ?? '',
-                          title: item.title ?? '',
-                          price: (item.price ?? 0).toDouble(),
-                          id: item.id,
-                        );
-                      },
-                    );
-                  },
-                  orElse: () => const SizedBox.shrink(),
-                );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
               },
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNoResults(bool isLoading, S s) {
+    if (isLoading) return const ProductGridShimmer();
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.search_off, size: 80.sp, color: AppColors.grey),
+          vGap(16.h),
+          Text(s.no_search_results, style: AppTextStyles.font16BlackBold),
+          Text(
+            "Try checking your spelling or use different keywords",
+            style: AppTextStyles.font14GreyRegular,
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

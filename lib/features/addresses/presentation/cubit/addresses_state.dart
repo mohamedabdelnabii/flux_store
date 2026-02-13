@@ -5,9 +5,9 @@ part 'addresses_state.freezed.dart';
 
 @freezed
 class AddressesState with _$AddressesState {
-  const factory AddressesState.initial() = _Initial;
-  const factory AddressesState.loading() = Loading;
-  const factory AddressesState.success(AddressResponse addressResponse) =
-      Success;
-  const factory AddressesState.error({required String error}) = Error;
+  const factory AddressesState({
+    @Default(false) bool isLoading,
+    AddressResponse? addressResponse,
+    String? error,
+  }) = _AddressesState;
 }

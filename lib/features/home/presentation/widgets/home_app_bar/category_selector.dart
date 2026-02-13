@@ -4,6 +4,8 @@ import 'package:flux_store/core/helpers/spacing.dart';
 import 'package:flux_store/core/theme/app_colors.dart';
 import 'package:flux_store/core/theme/app_text_styles.dart';
 import 'package:flux_store/core/widgets/custom_network_image.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flux_store/features/home/presentation/cubit/home_cubit.dart';
 import 'package:flux_store/features/categories/data/models/category_response.dart';
 
 class CategorySelector extends StatefulWidget {
@@ -28,15 +30,20 @@ class _CategorySelectorState extends State<CategorySelector> {
         height: 85.h,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: widget.categories.length,
+          itemCount: widget.categories.length + 1,
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           itemBuilder: (context, index) {
-            final category = widget.categories[index];
+            final isAll = index == 0;
+            final category = isAll ? null : widget.categories[index - 1];
             bool isSelected = selectedIndex == index;
 
             return GestureDetector(
               onTap: () {
                 setState(() => selectedIndex = index);
+                context.read<HomeCubit>().selectCategory(
+                  isAll ? null : category?.id?.toString(),
+                  isAll ? null : category?.name,
+                );
               },
               child: Padding(
                 padding: EdgeInsets.only(right: 20.w),
@@ -54,12 +61,14 @@ class _CategorySelectorState extends State<CategorySelector> {
                             : AppColors.greySubtle,
                       ),
                       child: ClipOval(
-                        child: CustomNetworkImage(
-                          imageUrl: category.image ?? '',
-                          width: 55.w,
-                          height: 55.h,
-                          fit: BoxFit.cover,
-                        ),
+                        child: isAll
+                            ? Icon(Icons.apps, color: AppColors.primary)
+                            : CustomNetworkImage(
+                                imageUrl: category?.image ?? '',
+                                width: 55.w,
+                                height: 55.h,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     vGap(5.h),
@@ -68,7 +77,7 @@ class _CategorySelectorState extends State<CategorySelector> {
                       style: isSelected
                           ? AppTextStyles.font12BlackBold
                           : AppTextStyles.font12GrayRegular,
-                      child: Text(category.name ?? ''),
+                      child: Text(isAll ? "All" : category?.name ?? ''),
                     ),
                   ],
                 ),

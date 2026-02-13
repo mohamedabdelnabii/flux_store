@@ -20,6 +20,8 @@ import 'package:flux_store/features/orders/presentation/cubit/orders_state.dart'
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flux_store/features/home/presentation/widgets/shimmer/home_shimmer.dart';
 import 'package:flux_store/features/addresses/presentation/screens/shipping_addresses_view.dart';
+import 'package:flux_store/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:flux_store/features/settings/data/models/payment_card_model.dart';
 
 class PaymentView extends StatefulWidget {
   static const String routeName = '/payment';
@@ -38,6 +40,7 @@ class _PaymentViewState extends State<PaymentView> {
   void initState() {
     super.initState();
     _currentAddress = widget.selectedAddress;
+    context.read<SettingsCubit>().getCards();
   }
 
   @override
@@ -79,32 +82,36 @@ class _PaymentViewState extends State<PaymentView> {
         appBar: CustomBackAppBar(title: s.checkout),
         body: BlocBuilder<CartCubit, CartState>(
           builder: (context, state) {
-            final double subtotal = state.maybeWhen(
-              success: (cartResponse) =>
-                  (cartResponse.data?.totalCartPrice ?? 0).toDouble(),
-              orElse: () => 0.0,
-            );
+            final double subtotal =
+                (state.cartResponse?.data?.totalCartPrice ?? 0).toDouble();
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(24.w, 10.h, 24.w, 30.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildProgressStepper(),
-                  vGap(30.h),
-                  _buildAddressSection(context),
-                  vGap(20.h),
-                  Text("Payment", style: AppTextStyles.font16BlackBold),
-                  vGap(16.h),
-                  _buildCreditCard(),
-                  vGap(24.h),
-                  _buildPaymentMethods(),
-                  vGap(32.h),
-                  _buildSummary(subtotal),
-                  vGap(40.h),
-                  _buildPlaceOrderButton(context, cartCubit),
-                ],
-              ),
+            return BlocBuilder<SettingsCubit, SettingsState>(
+              builder: (context, settingsState) {
+                final cards = settingsState.cards ?? [];
+                final selectedCard = cards.isNotEmpty ? cards[0] : null;
+
+                return SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(24.w, 10.h, 24.w, 30.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildProgressStepper(),
+                      vGap(30.h),
+                      _buildAddressSection(context),
+                      vGap(20.h),
+                      Text("Payment", style: AppTextStyles.font16BlackBold),
+                      vGap(16.h),
+                      _buildCreditCard(selectedCard),
+                      vGap(24.h),
+                      _buildPaymentMethods(),
+                      vGap(32.h),
+                      _buildSummary(subtotal),
+                      vGap(40.h),
+                      _buildPlaceOrderButton(context, cartCubit),
+                    ],
+                  ),
+                );
+              },
             );
           },
         ),
@@ -198,7 +205,28 @@ class _PaymentViewState extends State<PaymentView> {
     );
   }
 
-  Widget _buildCreditCard() {
+  Widget _buildCreditCard(PaymentCardModel? card) {
+    if (card == null) {
+      return Container(
+        height: 190.h,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.greyLight,
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.credit_card_off, size: 48.sp, color: AppColors.grey),
+              vGap(12.h),
+              Text("No card selected", style: AppTextStyles.font14GreyMedium),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Container(
       height: 190.h,
       width: double.infinity,
@@ -236,7 +264,7 @@ class _PaymentViewState extends State<PaymentView> {
             ],
           ),
           Text(
-            "**** **** **** 3947",
+            "**** **** **** ${card.cardNumber.substring(card.cardNumber.length - 4)}",
             style: AppTextStyles.font24WhiteBold.copyWith(letterSpacing: 2),
           ),
           Row(
@@ -251,7 +279,10 @@ class _PaymentViewState extends State<PaymentView> {
                       color: Colors.white.withValues(alpha: 0.5),
                     ),
                   ),
-                  Text("John Doe", style: AppTextStyles.font14WhiteBold),
+                  Text(
+                    card.cardHolderName,
+                    style: AppTextStyles.font14WhiteBold,
+                  ),
                 ],
               ),
               Column(
@@ -263,7 +294,7 @@ class _PaymentViewState extends State<PaymentView> {
                       color: Colors.white.withValues(alpha: 0.5),
                     ),
                   ),
-                  Text("05/24", style: AppTextStyles.font14WhiteBold),
+                  Text(card.expiryDate, style: AppTextStyles.font14WhiteBold),
                 ],
               ),
             ],

@@ -81,12 +81,11 @@ class ProductCard extends StatelessWidget {
                   right: 10.w,
                   child: BlocBuilder<WishlistCubit, WishlistState>(
                     builder: (context, state) {
-                      final bool isFavorite = state.maybeWhen(
-                        success: (wishlist) =>
-                            wishlist.data?.any((item) => item.id == id) ??
-                            false,
-                        orElse: () => false,
-                      );
+                      final bool isFavorite =
+                          state.wishlistResponse?.data?.any(
+                            (item) => item.id == id,
+                          ) ??
+                          false;
                       return GestureDetector(
                         onTap: () {
                           context.read<WishlistCubit>().toggleWishlist(

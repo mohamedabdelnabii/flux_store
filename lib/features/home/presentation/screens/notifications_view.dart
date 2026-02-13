@@ -40,29 +40,35 @@ class NotificationsView extends StatelessWidget {
       ),
       body: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
-          return state.when(
-            initial: () => const SizedBox.shrink(),
-            loading: () => _buildNotificationsList(
+          final isLoading = state.isLoading;
+          final notifications = state.notifications;
+          final error = state.error;
+
+          if (error != null && notifications == null) {
+            return CustomErrorState(
+              title: s.errorOccurred,
+              subtitle: error.message ?? s.errorOccurred,
+              onRetry: () =>
+                  context.read<NotificationsCubit>().getNotifications(),
+            );
+          }
+
+          if (isLoading && notifications == null) {
+            return _buildNotificationsList(
               context,
               _dummyNotifications,
               isLoading: true,
-            ),
-            success: (notifications) {
-              if (notifications.isEmpty) {
-                return CustomEmptyState(
-                  title: s.noNotifications,
-                  subtitle: s.noNotificationsMessage,
-                );
-              }
-              return _buildNotificationsList(context, notifications);
-            },
-            error: (apiErrorModel) => CustomErrorState(
-              title: s.errorOccurred,
-              subtitle: apiErrorModel.message ?? s.errorOccurred,
-              onRetry: () =>
-                  context.read<NotificationsCubit>().getNotifications(),
-            ),
-          );
+            );
+          }
+
+          if (notifications == null || notifications.isEmpty) {
+            return CustomEmptyState(
+              title: s.noNotifications,
+              subtitle: s.noNotificationsMessage,
+            );
+          }
+
+          return _buildNotificationsList(context, notifications);
         },
       ),
     );

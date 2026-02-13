@@ -16,7 +16,12 @@ import 'package:go_router/go_router.dart';
 
 class WomensProductsSection extends StatefulWidget {
   final String categoryId;
-  const WomensProductsSection({super.key, required this.categoryId});
+  final String title;
+  const WomensProductsSection({
+    super.key,
+    required this.categoryId,
+    this.title = "Women's Collection",
+  });
 
   @override
   State<WomensProductsSection> createState() => _WomensProductsSectionState();
@@ -57,7 +62,7 @@ class _WomensProductsSectionState extends State<WomensProductsSection> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const ProductSectionShimmer(title: "Women's Collection");
+      return ProductSectionShimmer(title: widget.title);
     }
 
     if (products.isEmpty) {
@@ -72,10 +77,10 @@ class _WomensProductsSectionState extends State<WomensProductsSection> {
             horizontal: AppConstants.paddingHorizontal,
           ),
           child: CustomTextRow(
-            title: "Women's Collection",
+            title: widget.title,
             subTitle: S.of(context).showAll,
             onTap: () {
-              context.read<SearchCubit>().search(category: "Women's Fashion");
+              context.read<SearchCubit>().search(category: widget.title);
               context.push(SearchView.routeName);
             },
           ),

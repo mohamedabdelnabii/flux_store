@@ -69,46 +69,54 @@ class _DiscoverViewBodyState extends State<DiscoverViewBody> {
             vGap(20.h),
             BlocBuilder<HomeCubit, HomeState>(
               builder: (context, state) {
-                return state.maybeWhen(
-                  loading: () => const Center(child: HomeShimmer()),
-                  success: (homeResponse) {
-                    final categories = (homeResponse.categories ?? [])
-                        .where(
-                          (c) =>
-                              c.name == "Men's Fashion" ||
-                              c.name == "Women's Fashion" ||
-                              c.name == "Electronics",
-                        ) // API might not have Shoes directly
-                        .toList();
+                final isLoading = state.isLoading;
+                final homeResponse = state.homeResponse;
+                final error = state.error;
 
-                    return ListView.separated(
-                      controller: _scrollController,
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: categories.length,
-                      separatorBuilder: (context, index) => vGap(20.h),
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        final color = cardColors[index % cardColors.length];
+                if (error != null && homeResponse == null) {
+                  return Center(child: Text(error));
+                }
 
-                        return SectionSearchCard(
-                          imageUrl: category.image ?? '',
-                          title: category.name ?? '',
-                          color: color,
-                          onTap: () {
-                            context.read<SearchCubit>().search(
-                              category: category.name,
-                            );
-                            context.push(SearchView.routeName);
-                          },
-                        );
-                      },
-                    );
-                  },
-                  error: (error) => Center(child: Text(error)),
-                  orElse: () => const SizedBox.shrink(),
-                );
+                if (isLoading && homeResponse == null) {
+                  return const DiscoverShimmer();
+                }
+
+                if (homeResponse != null) {
+                  final categories = (homeResponse.categories ?? [])
+                      .where(
+                        (c) =>
+                            c.name == "Men's Fashion" ||
+                            c.name == "Women's Fashion" ||
+                            c.name == "Electronics",
+                      ) // API might not have Shoes directly
+                      .toList();
+
+                  return ListView.separated(
+                    controller: _scrollController,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: categories.length,
+                    separatorBuilder: (context, index) => vGap(20.h),
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      final color = cardColors[index % cardColors.length];
+
+                      return SectionSearchCard(
+                        imageUrl: category.image ?? '',
+                        title: category.name ?? '',
+                        color: color,
+                        onTap: () {
+                          context.read<SearchCubit>().search(
+                            category: category.name,
+                          );
+                          context.push(SearchView.routeName);
+                        },
+                      );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
               },
             ),
             vGap(20.h),

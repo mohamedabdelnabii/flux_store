@@ -18,13 +18,11 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
-        if (state is Loading) {
+        if (state.isProfileLoading && state.userData == null) {
           return const ProfileHeaderShimmer();
         }
 
-        final userData = state.whenOrNull(
-          profileSuccess: (userData) => userData,
-        );
+        final userData = state.userData;
 
         return GestureDetector(
           onTap: () {

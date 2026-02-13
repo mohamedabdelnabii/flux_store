@@ -50,23 +50,11 @@ class _FilterSheetState extends State<FilterSheet> {
 
     // Sync with Cubit state
     final searchState = context.read<SearchCubit>().state;
-    searchState.maybeWhen(
-      success: (_, query, category, minPrice, maxPrice, sort) {
-        selectedCategory = category;
-        selectedSort = sort;
-        if (minPrice != null && maxPrice != null) {
-          _values = RangeValues(minPrice, maxPrice);
-        }
-      },
-      loading: (query, category, minPrice, maxPrice, sort) {
-        selectedCategory = category;
-        selectedSort = sort;
-        if (minPrice != null && maxPrice != null) {
-          _values = RangeValues(minPrice, maxPrice);
-        }
-      },
-      orElse: () {},
-    );
+    selectedCategory = searchState.category;
+    selectedSort = searchState.sort;
+    if (searchState.minPrice != null && searchState.maxPrice != null) {
+      _values = RangeValues(searchState.minPrice!, searchState.maxPrice!);
+    }
   }
 
   //  VALIDATION

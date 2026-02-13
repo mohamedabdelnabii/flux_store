@@ -33,43 +33,53 @@ class _MyOrdersViewState extends State<MyOrdersView> {
       appBar: CustomBackAppBar(title: s.myOrders),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
-          return state.maybeWhen(
-            loading: () => const OrdersShimmer(),
-            ordersSuccess: (orders) => _buildOrdersTabs(context, orders, s),
-            error: (error) => Center(child: Text(error)),
-            orElse: () => const OrdersShimmer(),
-          );
-        },
-      ),
-    );
-  }
+          final isLoading = state.isOrdersLoading;
+          final orders = state.orders;
+          final error = state.error;
 
-  Widget _buildOrdersTabs(BuildContext context, List<OrderModel> orders, S s) {
-    return DefaultTabController(
-      length: 3,
-      child: Column(
-        children: [
-          TabBar(
-            labelColor: AppColors.black,
-            unselectedLabelColor: AppColors.grey,
-            indicatorColor: AppColors.primary,
-            labelStyle: AppTextStyles.font16BlackBold,
-            tabs: [
-              Tab(text: s.pending),
-              Tab(text: s.delivered),
-              Tab(text: s.cancelled),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
+          if (error != null && orders == null) {
+            return Center(child: Text(error));
+          }
+
+          return DefaultTabController(
+            length: 3,
+            child: Column(
               children: [
-                _OrdersList(orders: orders, status: s.pending),
-                _OrdersList(orders: orders, status: s.delivered),
-                _OrdersList(orders: orders, status: s.cancelled),
+                TabBar(
+                  labelColor: AppColors.black,
+                  unselectedLabelColor: AppColors.grey,
+                  indicatorColor: AppColors.primary,
+                  labelStyle: AppTextStyles.font16BlackBold,
+                  tabs: [
+                    Tab(text: s.pending),
+                    Tab(text: s.delivered),
+                    Tab(text: s.cancelled),
+                  ],
+                ),
+                Expanded(
+                  child: (isLoading && orders == null)
+                      ? const OrdersShimmer()
+                      : TabBarView(
+                          children: [
+                            _OrdersList(
+                              orders: orders ?? [],
+                              status: s.pending,
+                            ),
+                            _OrdersList(
+                              orders: orders ?? [],
+                              status: s.delivered,
+                            ),
+                            _OrdersList(
+                              orders: orders ?? [],
+                              status: s.cancelled,
+                            ),
+                          ],
+                        ),
+                ),
               ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -83,10 +93,20 @@ class _OrdersList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final filteredOrders = orders;
+    final filteredOrders = orders.where((order) {
+      if (status == s.delivered) {
+        return order.isDelivered == true;
+      } else if (status == s.cancelled) {
+        // Assuming status string 'cancelled' for cancelled orders
+        return order.status == 'cancelled';
+      } else {
+        // Pending: Not delivered yet
+        return order.isDelivered == false;
+      }
+    }).toList();
 
     if (filteredOrders.isEmpty) {
-      return const Center(child: Text("No orders found"));
+      return Center(child: Text("${s.no_search_results} ($status)"));
     }
 
     return ListView.builder(
@@ -115,17 +135,20 @@ class _OrdersList extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Order #${order.id}",
+                    "Order #${order.id?.substring(0, 8) ?? ""}",
                     style: AppTextStyles.font16BlackBold,
                   ),
-                  Text(order.date ?? "", style: AppTextStyles.font14GreyMedium),
+                  Text(
+                    order.createdAt?.split('T')[0] ?? "",
+                    style: AppTextStyles.font14GreyMedium,
+                  ),
                 ],
               ),
               vGap(12.h),
               Row(
                 children: [
                   Text(
-                    "${s.totalAmount}: \$${order.total ?? 0}",
+                    "${s.totalAmount}: \$${order.totalOrderPrice ?? 0}",
                     style: AppTextStyles.font16BlackBold,
                   ),
                   const Spacer(),

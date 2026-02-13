@@ -65,14 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.0"
-  blueprint_cli:
-    dependency: "direct main"
-    description:
-      name: blueprint_cli
-      sha256: "3705c29c8b45ceb97cf8ab34ed7f46831711c8d61d7926f4152126ab84d338d2"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.2+4"
   boolean_selector:
     dependency: transitive
     description:
@@ -441,6 +433,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.24.1"
+  firebase_crashlytics:
+    dependency: "direct main"
+    description:
+      name: firebase_crashlytics
+      sha256: "662ae6443da91bca1fb0be8aeeac026fa2975e8b7ddfca36e4d90ebafa35dde1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.3.10"
+  firebase_crashlytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_crashlytics_platform_interface
+      sha256: "7222a8a40077c79f6b8b3f3439241c9f2b34e9ddfde8381ffc512f7b2e61f7eb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.10"
   firebase_messaging:
     dependency: "direct main"
     description:

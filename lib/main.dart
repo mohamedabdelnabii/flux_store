@@ -5,6 +5,7 @@ import 'package:flux_store/my_app.dart';
 void main() async {
   await AppInitializer.initCore();
   await AppInitializer.initRouter();
+  await AppInitializer.initFirebase();
 
   runApp(MyApp());
 }

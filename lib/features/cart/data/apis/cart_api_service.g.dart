@@ -57,11 +57,19 @@ class _CartApiService implements CartApiService {
   }
 
   @override
-  Future<CartResponse> addToCart(String productId) async {
+  Future<CartResponse> addToCart(
+    String productId, [
+    int? count,
+  ]) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
-    final _data = {'productId': productId};
+    final _data = {
+      'productId': productId,
+      'count': count,
+    };
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<CartResponse>(Options(
       method: 'POST',
       headers: _headers,

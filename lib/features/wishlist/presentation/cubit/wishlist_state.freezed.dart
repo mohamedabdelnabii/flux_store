@@ -16,55 +16,12 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$WishlistState {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(WishlistResponse wishlistResponse) success,
-    required TResult Function(String error) error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(WishlistResponse wishlistResponse)? success,
-    TResult? Function(String error)? error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(WishlistResponse wishlistResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    required TResult orElse(),
-  }) =>
+  bool get isLoading => throw _privateConstructorUsedError;
+  WishlistResponse? get wishlistResponse => throw _privateConstructorUsedError;
+  String? get error => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $WishlistStateCopyWith<WishlistState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -73,6 +30,9 @@ abstract class $WishlistStateCopyWith<$Res> {
   factory $WishlistStateCopyWith(
           WishlistState value, $Res Function(WishlistState) then) =
       _$WishlistStateCopyWithImpl<$Res, WishlistState>;
+  @useResult
+  $Res call(
+      {bool isLoading, WishlistResponse? wishlistResponse, String? error});
 }
 
 /// @nodoc
@@ -84,524 +44,131 @@ class _$WishlistStateCopyWithImpl<$Res, $Val extends WishlistState>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-}
-
-/// @nodoc
-abstract class _$$InitialImplCopyWith<$Res> {
-  factory _$$InitialImplCopyWith(
-          _$InitialImpl value, $Res Function(_$InitialImpl) then) =
-      __$$InitialImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$InitialImplCopyWithImpl<$Res>
-    extends _$WishlistStateCopyWithImpl<$Res, _$InitialImpl>
-    implements _$$InitialImplCopyWith<$Res> {
-  __$$InitialImplCopyWithImpl(
-      _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$InitialImpl implements _Initial {
-  const _$InitialImpl();
-
-  @override
-  String toString() {
-    return 'WishlistState.initial()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InitialImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(WishlistResponse wishlistResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return initial();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(WishlistResponse wishlistResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return initial?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(WishlistResponse wishlistResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-  }) {
-    return initial(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-  }) {
-    return initial?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _Initial implements WishlistState {
-  const factory _Initial() = _$InitialImpl;
-}
-
-/// @nodoc
-abstract class _$$LoadingImplCopyWith<$Res> {
-  factory _$$LoadingImplCopyWith(
-          _$LoadingImpl value, $Res Function(_$LoadingImpl) then) =
-      __$$LoadingImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$LoadingImplCopyWithImpl<$Res>
-    extends _$WishlistStateCopyWithImpl<$Res, _$LoadingImpl>
-    implements _$$LoadingImplCopyWith<$Res> {
-  __$$LoadingImplCopyWithImpl(
-      _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$LoadingImpl implements _Loading {
-  const _$LoadingImpl();
-
-  @override
-  String toString() {
-    return 'WishlistState.loading()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$LoadingImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(WishlistResponse wishlistResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return loading();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(WishlistResponse wishlistResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return loading?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(WishlistResponse wishlistResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (loading != null) {
-      return loading();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-  }) {
-    return loading(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-  }) {
-    return loading?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (loading != null) {
-      return loading(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _Loading implements WishlistState {
-  const factory _Loading() = _$LoadingImpl;
-}
-
-/// @nodoc
-abstract class _$$SuccessImplCopyWith<$Res> {
-  factory _$$SuccessImplCopyWith(
-          _$SuccessImpl value, $Res Function(_$SuccessImpl) then) =
-      __$$SuccessImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({WishlistResponse wishlistResponse});
-}
-
-/// @nodoc
-class __$$SuccessImplCopyWithImpl<$Res>
-    extends _$WishlistStateCopyWithImpl<$Res, _$SuccessImpl>
-    implements _$$SuccessImplCopyWith<$Res> {
-  __$$SuccessImplCopyWithImpl(
-      _$SuccessImpl _value, $Res Function(_$SuccessImpl) _then)
-      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? wishlistResponse = null,
+    Object? isLoading = null,
+    Object? wishlistResponse = freezed,
+    Object? error = freezed,
   }) {
-    return _then(_$SuccessImpl(
-      null == wishlistResponse
+    return _then(_value.copyWith(
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      wishlistResponse: freezed == wishlistResponse
           ? _value.wishlistResponse
           : wishlistResponse // ignore: cast_nullable_to_non_nullable
-              as WishlistResponse,
-    ));
+              as WishlistResponse?,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
-
-class _$SuccessImpl implements _Success {
-  const _$SuccessImpl(this.wishlistResponse);
-
+abstract class _$$WishlistStateImplCopyWith<$Res>
+    implements $WishlistStateCopyWith<$Res> {
+  factory _$$WishlistStateImplCopyWith(
+          _$WishlistStateImpl value, $Res Function(_$WishlistStateImpl) then) =
+      __$$WishlistStateImplCopyWithImpl<$Res>;
   @override
-  final WishlistResponse wishlistResponse;
-
-  @override
-  String toString() {
-    return 'WishlistState.success(wishlistResponse: $wishlistResponse)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SuccessImpl &&
-            (identical(other.wishlistResponse, wishlistResponse) ||
-                other.wishlistResponse == wishlistResponse));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, wishlistResponse);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
-      __$$SuccessImplCopyWithImpl<_$SuccessImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(WishlistResponse wishlistResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return success(wishlistResponse);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(WishlistResponse wishlistResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return success?.call(wishlistResponse);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(WishlistResponse wishlistResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (success != null) {
-      return success(wishlistResponse);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-  }) {
-    return success(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-  }) {
-    return success?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (success != null) {
-      return success(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _Success implements WishlistState {
-  const factory _Success(final WishlistResponse wishlistResponse) =
-      _$SuccessImpl;
-
-  WishlistResponse get wishlistResponse;
-  @JsonKey(ignore: true)
-  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$ErrorImplCopyWith<$Res> {
-  factory _$$ErrorImplCopyWith(
-          _$ErrorImpl value, $Res Function(_$ErrorImpl) then) =
-      __$$ErrorImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String error});
+  $Res call(
+      {bool isLoading, WishlistResponse? wishlistResponse, String? error});
 }
 
 /// @nodoc
-class __$$ErrorImplCopyWithImpl<$Res>
-    extends _$WishlistStateCopyWithImpl<$Res, _$ErrorImpl>
-    implements _$$ErrorImplCopyWith<$Res> {
-  __$$ErrorImplCopyWithImpl(
-      _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
+class __$$WishlistStateImplCopyWithImpl<$Res>
+    extends _$WishlistStateCopyWithImpl<$Res, _$WishlistStateImpl>
+    implements _$$WishlistStateImplCopyWith<$Res> {
+  __$$WishlistStateImplCopyWithImpl(
+      _$WishlistStateImpl _value, $Res Function(_$WishlistStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = null,
+    Object? isLoading = null,
+    Object? wishlistResponse = freezed,
+    Object? error = freezed,
   }) {
-    return _then(_$ErrorImpl(
-      error: null == error
+    return _then(_$WishlistStateImpl(
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      wishlistResponse: freezed == wishlistResponse
+          ? _value.wishlistResponse
+          : wishlistResponse // ignore: cast_nullable_to_non_nullable
+              as WishlistResponse?,
+      error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
     ));
   }
 }
 
 /// @nodoc
 
-class _$ErrorImpl implements _Error {
-  const _$ErrorImpl({required this.error});
+class _$WishlistStateImpl implements _WishlistState {
+  const _$WishlistStateImpl(
+      {this.isLoading = false, this.wishlistResponse, this.error});
 
   @override
-  final String error;
+  @JsonKey()
+  final bool isLoading;
+  @override
+  final WishlistResponse? wishlistResponse;
+  @override
+  final String? error;
 
   @override
   String toString() {
-    return 'WishlistState.error(error: $error)';
+    return 'WishlistState(isLoading: $isLoading, wishlistResponse: $wishlistResponse, error: $error)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ErrorImpl &&
+            other is _$WishlistStateImpl &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading) &&
+            (identical(other.wishlistResponse, wishlistResponse) ||
+                other.wishlistResponse == wishlistResponse) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, error);
+  int get hashCode =>
+      Object.hash(runtimeType, isLoading, wishlistResponse, error);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
-      __$$ErrorImplCopyWithImpl<_$ErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(WishlistResponse wishlistResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return error(this.error);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(WishlistResponse wishlistResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return error?.call(this.error);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(WishlistResponse wishlistResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (error != null) {
-      return error(this.error);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(_Loading value) loading,
-    required TResult Function(_Success value) success,
-    required TResult Function(_Error value) error,
-  }) {
-    return error(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(_Loading value)? loading,
-    TResult? Function(_Success value)? success,
-    TResult? Function(_Error value)? error,
-  }) {
-    return error?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(_Loading value)? loading,
-    TResult Function(_Success value)? success,
-    TResult Function(_Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (error != null) {
-      return error(this);
-    }
-    return orElse();
-  }
+  _$$WishlistStateImplCopyWith<_$WishlistStateImpl> get copyWith =>
+      __$$WishlistStateImplCopyWithImpl<_$WishlistStateImpl>(this, _$identity);
 }
 
-abstract class _Error implements WishlistState {
-  const factory _Error({required final String error}) = _$ErrorImpl;
+abstract class _WishlistState implements WishlistState {
+  const factory _WishlistState(
+      {final bool isLoading,
+      final WishlistResponse? wishlistResponse,
+      final String? error}) = _$WishlistStateImpl;
 
-  String get error;
+  @override
+  bool get isLoading;
+  @override
+  WishlistResponse? get wishlistResponse;
+  @override
+  String? get error;
+  @override
   @JsonKey(ignore: true)
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
+  _$$WishlistStateImplCopyWith<_$WishlistStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

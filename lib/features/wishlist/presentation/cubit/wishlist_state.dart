@@ -5,9 +5,9 @@ part 'wishlist_state.freezed.dart';
 
 @freezed
 class WishlistState with _$WishlistState {
-  const factory WishlistState.initial() = _Initial;
-  const factory WishlistState.loading() = _Loading;
-  const factory WishlistState.success(WishlistResponse wishlistResponse) =
-      _Success;
-  const factory WishlistState.error({required String error}) = _Error;
+  const factory WishlistState({
+    @Default(false) bool isLoading,
+    WishlistResponse? wishlistResponse,
+    String? error,
+  }) = _WishlistState;
 }

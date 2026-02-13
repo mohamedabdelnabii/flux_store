@@ -16,55 +16,14 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$HomeState {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(HomeResponse homeResponse) success,
-    required TResult Function(String error) error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(HomeResponse homeResponse)? success,
-    TResult? Function(String error)? error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(HomeResponse homeResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(Loading value) loading,
-    required TResult Function(Success value) success,
-    required TResult Function(Error value) error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(Loading value)? loading,
-    TResult? Function(Success value)? success,
-    TResult? Function(Error value)? error,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(Loading value)? loading,
-    TResult Function(Success value)? success,
-    TResult Function(Error value)? error,
-    required TResult orElse(),
-  }) =>
+  bool get isLoading => throw _privateConstructorUsedError;
+  HomeResponse? get homeResponse => throw _privateConstructorUsedError;
+  String? get error => throw _privateConstructorUsedError;
+  String? get selectedCategoryId => throw _privateConstructorUsedError;
+  String? get selectedCategoryName => throw _privateConstructorUsedError;
+
+  @JsonKey(ignore: true)
+  $HomeStateCopyWith<HomeState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -72,6 +31,13 @@ mixin _$HomeState {
 abstract class $HomeStateCopyWith<$Res> {
   factory $HomeStateCopyWith(HomeState value, $Res Function(HomeState) then) =
       _$HomeStateCopyWithImpl<$Res, HomeState>;
+  @useResult
+  $Res call(
+      {bool isLoading,
+      HomeResponse? homeResponse,
+      String? error,
+      String? selectedCategoryId,
+      String? selectedCategoryName});
 }
 
 /// @nodoc
@@ -83,523 +49,173 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-}
-
-/// @nodoc
-abstract class _$$InitialImplCopyWith<$Res> {
-  factory _$$InitialImplCopyWith(
-          _$InitialImpl value, $Res Function(_$InitialImpl) then) =
-      __$$InitialImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$InitialImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$InitialImpl>
-    implements _$$InitialImplCopyWith<$Res> {
-  __$$InitialImplCopyWithImpl(
-      _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$InitialImpl implements _Initial {
-  const _$InitialImpl();
-
-  @override
-  String toString() {
-    return 'HomeState.initial()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$InitialImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(HomeResponse homeResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return initial();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(HomeResponse homeResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return initial?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(HomeResponse homeResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(Loading value) loading,
-    required TResult Function(Success value) success,
-    required TResult Function(Error value) error,
-  }) {
-    return initial(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(Loading value)? loading,
-    TResult? Function(Success value)? success,
-    TResult? Function(Error value)? error,
-  }) {
-    return initial?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(Loading value)? loading,
-    TResult Function(Success value)? success,
-    TResult Function(Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (initial != null) {
-      return initial(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _Initial implements HomeState {
-  const factory _Initial() = _$InitialImpl;
-}
-
-/// @nodoc
-abstract class _$$LoadingImplCopyWith<$Res> {
-  factory _$$LoadingImplCopyWith(
-          _$LoadingImpl value, $Res Function(_$LoadingImpl) then) =
-      __$$LoadingImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$LoadingImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$LoadingImpl>
-    implements _$$LoadingImplCopyWith<$Res> {
-  __$$LoadingImplCopyWithImpl(
-      _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$LoadingImpl implements Loading {
-  const _$LoadingImpl();
-
-  @override
-  String toString() {
-    return 'HomeState.loading()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$LoadingImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(HomeResponse homeResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return loading();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(HomeResponse homeResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return loading?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(HomeResponse homeResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (loading != null) {
-      return loading();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(Loading value) loading,
-    required TResult Function(Success value) success,
-    required TResult Function(Error value) error,
-  }) {
-    return loading(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(Loading value)? loading,
-    TResult? Function(Success value)? success,
-    TResult? Function(Error value)? error,
-  }) {
-    return loading?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(Loading value)? loading,
-    TResult Function(Success value)? success,
-    TResult Function(Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (loading != null) {
-      return loading(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class Loading implements HomeState {
-  const factory Loading() = _$LoadingImpl;
-}
-
-/// @nodoc
-abstract class _$$SuccessImplCopyWith<$Res> {
-  factory _$$SuccessImplCopyWith(
-          _$SuccessImpl value, $Res Function(_$SuccessImpl) then) =
-      __$$SuccessImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({HomeResponse homeResponse});
-}
-
-/// @nodoc
-class __$$SuccessImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$SuccessImpl>
-    implements _$$SuccessImplCopyWith<$Res> {
-  __$$SuccessImplCopyWithImpl(
-      _$SuccessImpl _value, $Res Function(_$SuccessImpl) _then)
-      : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? homeResponse = null,
+    Object? isLoading = null,
+    Object? homeResponse = freezed,
+    Object? error = freezed,
+    Object? selectedCategoryId = freezed,
+    Object? selectedCategoryName = freezed,
   }) {
-    return _then(_$SuccessImpl(
-      null == homeResponse
+    return _then(_value.copyWith(
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      homeResponse: freezed == homeResponse
           ? _value.homeResponse
           : homeResponse // ignore: cast_nullable_to_non_nullable
-              as HomeResponse,
-    ));
+              as HomeResponse?,
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedCategoryId: freezed == selectedCategoryId
+          ? _value.selectedCategoryId
+          : selectedCategoryId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedCategoryName: freezed == selectedCategoryName
+          ? _value.selectedCategoryName
+          : selectedCategoryName // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
   }
 }
 
 /// @nodoc
-
-class _$SuccessImpl implements Success {
-  const _$SuccessImpl(this.homeResponse);
-
+abstract class _$$HomeStateImplCopyWith<$Res>
+    implements $HomeStateCopyWith<$Res> {
+  factory _$$HomeStateImplCopyWith(
+          _$HomeStateImpl value, $Res Function(_$HomeStateImpl) then) =
+      __$$HomeStateImplCopyWithImpl<$Res>;
   @override
-  final HomeResponse homeResponse;
-
-  @override
-  String toString() {
-    return 'HomeState.success(homeResponse: $homeResponse)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SuccessImpl &&
-            (identical(other.homeResponse, homeResponse) ||
-                other.homeResponse == homeResponse));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, homeResponse);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
-      __$$SuccessImplCopyWithImpl<_$SuccessImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(HomeResponse homeResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return success(homeResponse);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(HomeResponse homeResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return success?.call(homeResponse);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(HomeResponse homeResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (success != null) {
-      return success(homeResponse);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(Loading value) loading,
-    required TResult Function(Success value) success,
-    required TResult Function(Error value) error,
-  }) {
-    return success(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(Loading value)? loading,
-    TResult? Function(Success value)? success,
-    TResult? Function(Error value)? error,
-  }) {
-    return success?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(Loading value)? loading,
-    TResult Function(Success value)? success,
-    TResult Function(Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (success != null) {
-      return success(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class Success implements HomeState {
-  const factory Success(final HomeResponse homeResponse) = _$SuccessImpl;
-
-  HomeResponse get homeResponse;
-  @JsonKey(ignore: true)
-  _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$ErrorImplCopyWith<$Res> {
-  factory _$$ErrorImplCopyWith(
-          _$ErrorImpl value, $Res Function(_$ErrorImpl) then) =
-      __$$ErrorImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String error});
+  $Res call(
+      {bool isLoading,
+      HomeResponse? homeResponse,
+      String? error,
+      String? selectedCategoryId,
+      String? selectedCategoryName});
 }
 
 /// @nodoc
-class __$$ErrorImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$ErrorImpl>
-    implements _$$ErrorImplCopyWith<$Res> {
-  __$$ErrorImplCopyWithImpl(
-      _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
+class __$$HomeStateImplCopyWithImpl<$Res>
+    extends _$HomeStateCopyWithImpl<$Res, _$HomeStateImpl>
+    implements _$$HomeStateImplCopyWith<$Res> {
+  __$$HomeStateImplCopyWithImpl(
+      _$HomeStateImpl _value, $Res Function(_$HomeStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = null,
+    Object? isLoading = null,
+    Object? homeResponse = freezed,
+    Object? error = freezed,
+    Object? selectedCategoryId = freezed,
+    Object? selectedCategoryName = freezed,
   }) {
-    return _then(_$ErrorImpl(
-      error: null == error
+    return _then(_$HomeStateImpl(
+      isLoading: null == isLoading
+          ? _value.isLoading
+          : isLoading // ignore: cast_nullable_to_non_nullable
+              as bool,
+      homeResponse: freezed == homeResponse
+          ? _value.homeResponse
+          : homeResponse // ignore: cast_nullable_to_non_nullable
+              as HomeResponse?,
+      error: freezed == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      selectedCategoryId: freezed == selectedCategoryId
+          ? _value.selectedCategoryId
+          : selectedCategoryId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedCategoryName: freezed == selectedCategoryName
+          ? _value.selectedCategoryName
+          : selectedCategoryName // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
 
 /// @nodoc
 
-class _$ErrorImpl implements Error {
-  const _$ErrorImpl({required this.error});
+class _$HomeStateImpl implements _HomeState {
+  const _$HomeStateImpl(
+      {this.isLoading = false,
+      this.homeResponse,
+      this.error,
+      this.selectedCategoryId,
+      this.selectedCategoryName});
 
   @override
-  final String error;
+  @JsonKey()
+  final bool isLoading;
+  @override
+  final HomeResponse? homeResponse;
+  @override
+  final String? error;
+  @override
+  final String? selectedCategoryId;
+  @override
+  final String? selectedCategoryName;
 
   @override
   String toString() {
-    return 'HomeState.error(error: $error)';
+    return 'HomeState(isLoading: $isLoading, homeResponse: $homeResponse, error: $error, selectedCategoryId: $selectedCategoryId, selectedCategoryName: $selectedCategoryName)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ErrorImpl &&
-            (identical(other.error, error) || other.error == error));
+            other is _$HomeStateImpl &&
+            (identical(other.isLoading, isLoading) ||
+                other.isLoading == isLoading) &&
+            (identical(other.homeResponse, homeResponse) ||
+                other.homeResponse == homeResponse) &&
+            (identical(other.error, error) || other.error == error) &&
+            (identical(other.selectedCategoryId, selectedCategoryId) ||
+                other.selectedCategoryId == selectedCategoryId) &&
+            (identical(other.selectedCategoryName, selectedCategoryName) ||
+                other.selectedCategoryName == selectedCategoryName));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, error);
+  int get hashCode => Object.hash(runtimeType, isLoading, homeResponse, error,
+      selectedCategoryId, selectedCategoryName);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
-      __$$ErrorImplCopyWithImpl<_$ErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() initial,
-    required TResult Function() loading,
-    required TResult Function(HomeResponse homeResponse) success,
-    required TResult Function(String error) error,
-  }) {
-    return error(this.error);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? initial,
-    TResult? Function()? loading,
-    TResult? Function(HomeResponse homeResponse)? success,
-    TResult? Function(String error)? error,
-  }) {
-    return error?.call(this.error);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? initial,
-    TResult Function()? loading,
-    TResult Function(HomeResponse homeResponse)? success,
-    TResult Function(String error)? error,
-    required TResult orElse(),
-  }) {
-    if (error != null) {
-      return error(this.error);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_Initial value) initial,
-    required TResult Function(Loading value) loading,
-    required TResult Function(Success value) success,
-    required TResult Function(Error value) error,
-  }) {
-    return error(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_Initial value)? initial,
-    TResult? Function(Loading value)? loading,
-    TResult? Function(Success value)? success,
-    TResult? Function(Error value)? error,
-  }) {
-    return error?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_Initial value)? initial,
-    TResult Function(Loading value)? loading,
-    TResult Function(Success value)? success,
-    TResult Function(Error value)? error,
-    required TResult orElse(),
-  }) {
-    if (error != null) {
-      return error(this);
-    }
-    return orElse();
-  }
+  _$$HomeStateImplCopyWith<_$HomeStateImpl> get copyWith =>
+      __$$HomeStateImplCopyWithImpl<_$HomeStateImpl>(this, _$identity);
 }
 
-abstract class Error implements HomeState {
-  const factory Error({required final String error}) = _$ErrorImpl;
+abstract class _HomeState implements HomeState {
+  const factory _HomeState(
+      {final bool isLoading,
+      final HomeResponse? homeResponse,
+      final String? error,
+      final String? selectedCategoryId,
+      final String? selectedCategoryName}) = _$HomeStateImpl;
 
-  String get error;
+  @override
+  bool get isLoading;
+  @override
+  HomeResponse? get homeResponse;
+  @override
+  String? get error;
+  @override
+  String? get selectedCategoryId;
+  @override
+  String? get selectedCategoryName;
+  @override
   @JsonKey(ignore: true)
-  _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
+  _$$HomeStateImplCopyWith<_$HomeStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -2,21 +2,14 @@ part of 'search_cubit.dart';
 
 @freezed
 class SearchState with _$SearchState {
-  const factory SearchState.initial() = _Initial;
-  const factory SearchState.loading({
+  const factory SearchState({
+    @Default(false) bool isLoading,
+    SearchResponse? searchResponse,
     String? query,
     String? category,
     double? minPrice,
     double? maxPrice,
     String? sort,
-  }) = Loading;
-  const factory SearchState.success(
-    SearchResponse searchResponse, {
-    String? query,
-    String? category,
-    double? minPrice,
-    double? maxPrice,
-    String? sort,
-  }) = Success;
-  const factory SearchState.error({required String error}) = Error;
+    String? error,
+  }) = _SearchState;
 }

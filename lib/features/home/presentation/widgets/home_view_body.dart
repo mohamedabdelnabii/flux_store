@@ -11,7 +11,6 @@ import 'package:flux_store/features/home/presentation/widgets/products/mens_prod
 import 'package:flux_store/features/home/presentation/widgets/products/womens_products_section.dart';
 import 'package:flux_store/features/home/presentation/widgets/shimmer/home_shimmer.dart';
 
-import 'package:flux_store/features/home/data/models/home_response.dart';
 import 'package:flux_store/features/categories/data/models/category_response.dart';
 
 class HomeViewBody extends StatelessWidget {
@@ -21,9 +20,12 @@ class HomeViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        return state.maybeWhen(
-          loading: () => const HomeShimmer(),
-          error: (error) => Center(
+        final homeResponse = state.homeResponse;
+        final isLoading = state.isLoading;
+        final error = state.error;
+
+        if (error != null && homeResponse == null) {
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -37,69 +39,107 @@ class HomeViewBody extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-          success: (HomeResponse homeResponse) {
-            final List<CategoryModel> categories =
-                homeResponse.categories ?? [];
+          );
+        }
 
-            CategoryModel? mensCategory;
-            CategoryModel? womensCategory;
+        return RefreshIndicator(
+          onRefresh: () => context.read<HomeCubit>().getHomeData(),
+          child: CustomScrollView(
+            slivers: [
+              const HomeAppBar(),
+              SliverToBoxAdapter(child: vGap(20.h)),
 
-            for (final CategoryModel cat in categories) {
-              if (cat.name == "Men's Fashion") mensCategory = cat;
-              if (cat.name == "Women's Fashion") womensCategory = cat;
-            }
+              // Category Selector
+              if (isLoading && homeResponse == null)
+                const SliverToBoxAdapter(child: CategoryShimmer())
+              else if (homeResponse != null)
+                CategorySelector(categories: homeResponse.categories ?? []),
 
-            // Extract 3 product images for the banner
-            final bannerImages = (homeResponse.products ?? [])
-                .where((e) => e.imageCover != null && e.imageCover!.isNotEmpty)
-                .take(3)
-                .map((e) => e.imageCover!)
-                .toList();
+              SliverToBoxAdapter(child: vGap(20.h)),
 
-            return RefreshIndicator(
-              onRefresh: () => context.read<HomeCubit>().getHomeData(),
-              child: CustomScrollView(
-                slivers: [
-                  const HomeAppBar(),
-                  SliverToBoxAdapter(child: vGap(20.h)),
+              // Banners
+              if (isLoading && homeResponse == null)
+                const SliverToBoxAdapter(child: BannerShimmer())
+              else if (homeResponse != null)
+                BannerSlider(
+                  images: (homeResponse.products ?? [])
+                      .where(
+                        (e) => e.imageCover != null && e.imageCover!.isNotEmpty,
+                      )
+                      .take(3)
+                      .map((e) => e.imageCover!)
+                      .toList(),
+                ),
 
-                  // Category Selector
-                  CategorySelector(categories: categories),
-                  SliverToBoxAdapter(child: vGap(20.h)),
+              SliverToBoxAdapter(child: vGap(20.h)),
 
-                  // Banners
-                  BannerSlider(images: bannerImages),
-                  SliverToBoxAdapter(child: vGap(20.h)),
-
-                  // Featured Products
+              // Dynamic Content based on selection
+              if (state.selectedCategoryId != null) ...[
+                SliverToBoxAdapter(
+                  child: MensProductsSection(
+                    categoryId: state.selectedCategoryId!,
+                    title: state.selectedCategoryName ?? "Products",
+                  ),
+                ),
+              ] else ...[
+                // Featured Products
+                if (isLoading && homeResponse == null)
+                  const SliverToBoxAdapter(child: ProductSectionShimmer())
+                else if (homeResponse != null)
                   FeatureProductsSection(products: homeResponse.products ?? []),
-                  SliverToBoxAdapter(child: vGap(20.h)),
 
-                  // Men's Collection
-                  if (mensCategory != null && mensCategory.id != null)
-                    SliverToBoxAdapter(
-                      child: MensProductsSection(
-                        categoryId: mensCategory.id.toString(),
-                      ),
-                    ),
+                SliverToBoxAdapter(child: vGap(20.h)),
 
-                  SliverToBoxAdapter(child: vGap(20.h)),
+                // Men's Collection
+                if (isLoading && homeResponse == null)
+                  const SliverToBoxAdapter(child: ProductSectionShimmer())
+                else if (homeResponse != null)
+                  Builder(
+                    builder: (context) {
+                      final mensCategory = homeResponse.categories?.firstWhere(
+                        (cat) => cat.name == "Men's Fashion",
+                        orElse: () => CategoryModel(),
+                      );
+                      if (mensCategory != null && mensCategory.id != null) {
+                        return SliverToBoxAdapter(
+                          child: MensProductsSection(
+                            categoryId: mensCategory.id.toString(),
+                            title: "Men's Collection",
+                          ),
+                        );
+                      }
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    },
+                  ),
 
-                  // Women's Collection
-                  if (womensCategory != null && womensCategory.id != null)
-                    SliverToBoxAdapter(
-                      child: WomensProductsSection(
-                        categoryId: womensCategory.id.toString(),
-                      ),
-                    ),
+                SliverToBoxAdapter(child: vGap(20.h)),
 
-                  SliverToBoxAdapter(child: vGap(30.h)),
-                ],
-              ),
-            );
-          },
-          orElse: () => const HomeShimmer(),
+                // Women's Collection
+                if (isLoading && homeResponse == null)
+                  const SliverToBoxAdapter(child: ProductSectionShimmer())
+                else if (homeResponse != null)
+                  Builder(
+                    builder: (context) {
+                      final womensCategory = homeResponse.categories
+                          ?.firstWhere(
+                            (cat) => cat.name == "Women's Fashion",
+                            orElse: () => CategoryModel(),
+                          );
+                      if (womensCategory != null && womensCategory.id != null) {
+                        return SliverToBoxAdapter(
+                          child: WomensProductsSection(
+                            categoryId: womensCategory.id.toString(),
+                          ),
+                        );
+                      }
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    },
+                  ),
+              ],
+
+              SliverToBoxAdapter(child: vGap(30.h)),
+            ],
+          ),
         );
       },
     );

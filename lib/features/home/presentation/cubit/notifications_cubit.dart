@@ -6,20 +6,18 @@ import 'package:flux_store/features/home/data/models/notification_model.dart';
 class NotificationsCubit extends Cubit<NotificationsState> {
   final NotificationsRepository _repository;
 
-  NotificationsCubit(this._repository)
-    : super(const NotificationsState.initial());
+  NotificationsCubit(this._repository) : super(const NotificationsState());
 
-  List<NotificationModel> _notifications = [];
+  List<NotificationModel> get _notifications => state.notifications ?? [];
 
   Future<void> getNotifications() async {
-    emit(const NotificationsState.loading());
+    emit(state.copyWith(isLoading: true, error: null));
     final result = await _repository.getNotifications();
     result.when(
       success: (data) {
-        _notifications = data;
-        emit(NotificationsState.success(_notifications));
+        emit(state.copyWith(isLoading: false, notifications: data));
       },
-      failure: (error) => emit(NotificationsState.error(error)),
+      failure: (error) => emit(state.copyWith(isLoading: false, error: error)),
     );
   }
 
@@ -27,7 +25,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     final result = await _repository.markAsRead(id);
     result.when(
       success: (_) {
-        _notifications = _notifications.map((n) {
+        final updatedList = _notifications.map((n) {
           if (n.id == id) {
             return NotificationModel(
               id: n.id,
@@ -41,9 +39,9 @@ class NotificationsCubit extends Cubit<NotificationsState> {
           }
           return n;
         }).toList();
-        emit(NotificationsState.success(_notifications));
+        emit(state.copyWith(notifications: updatedList));
       },
-      failure: (error) => emit(NotificationsState.error(error)),
+      failure: (error) => emit(state.copyWith(error: error)),
     );
   }
 
@@ -51,10 +49,9 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     final result = await _repository.clearAllNotifications();
     result.when(
       success: (_) {
-        _notifications = [];
-        emit(NotificationsState.success(_notifications));
+        emit(state.copyWith(notifications: []));
       },
-      failure: (error) => emit(NotificationsState.error(error)),
+      failure: (error) => emit(state.copyWith(error: error)),
     );
   }
 
@@ -62,7 +59,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
   Future<void> addNotification(NotificationModel notification) async {
     await _repository.addNotification(notification);
-    _notifications = [notification, ..._notifications];
-    emit(NotificationsState.success(_notifications));
+    final updatedList = [notification, ..._notifications];
+    emit(state.copyWith(notifications: updatedList));
   }
 }

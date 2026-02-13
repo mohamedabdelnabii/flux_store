@@ -27,23 +27,23 @@ class CartCubit extends Cubit<CartState> {
     this._clearCartUseCase,
     this._notificationsCubit,
     this._pushService,
-  ) : super(const CartState.initial());
+  ) : super(const CartState());
 
   Future<void> getCartItems() async {
-    emit(const CartState.loading());
+    emit(state.copyWith(isLoading: true, error: null));
     final response = await _getCartUseCase();
     response.when(
       success: (cartResponse) {
-        emit(CartState.success(cartResponse));
+        emit(state.copyWith(isLoading: false, cartResponse: cartResponse));
       },
       failure: (error) {
-        emit(CartState.error(error: error.message ?? ""));
+        emit(state.copyWith(isLoading: false, error: error.message ?? ""));
       },
     );
   }
 
-  Future<void> addToCart(String productId) async {
-    final response = await _addToCartUseCase(productId);
+  Future<void> addToCart(String productId, {int? quantity}) async {
+    final response = await _addToCartUseCase(productId, count: quantity);
     response.when(
       success: (_) {
         getCartItems();
@@ -53,7 +53,7 @@ class CartCubit extends Cubit<CartState> {
           type: "cart",
         );
       },
-      failure: (error) => emit(CartState.error(error: error.message ?? "")),
+      failure: (error) => emit(state.copyWith(error: error.message ?? "")),
     );
   }
 
@@ -62,29 +62,59 @@ class CartCubit extends Cubit<CartState> {
     final response = await _updateCartQuantityUseCase(id, quantity);
     response.when(
       success: (_) => getCartItems(),
-      failure: (error) => emit(CartState.error(error: error.message ?? "")),
+      failure: (error) => emit(state.copyWith(error: error.message ?? "")),
     );
   }
 
   Future<void> removeFromCart(String id) async {
+    // Optimistic Update
+    final oldResponse = state.cartResponse;
+    if (oldResponse?.data?.products != null) {
+      final updatedProducts = oldResponse!.data!.products!
+          .where((item) => item.id != id)
+          .toList();
+
+      final newTotalPrice = updatedProducts.fold<num>(
+        0,
+        (sum, item) => sum + ((item.price ?? 0) * (item.count ?? 1)),
+      );
+
+      final optimisticResponse = CartResponse(
+        status: oldResponse.status,
+        numOfCartItems: updatedProducts.length,
+        cartId: oldResponse.cartId,
+        data: CartData(
+          id: oldResponse.data!.id,
+          cartOwner: oldResponse.data!.cartOwner,
+          products: updatedProducts,
+          createdAt: oldResponse.data!.createdAt,
+          updatedAt: oldResponse.data!.updatedAt,
+          v: oldResponse.data!.v,
+          totalCartPrice: newTotalPrice,
+        ),
+      );
+
+      emit(state.copyWith(cartResponse: optimisticResponse));
+    }
+
     final response = await _removeFromCartUseCase(id);
     response.when(
       success: (_) => getCartItems(),
-      failure: (error) => emit(CartState.error(error: error.message ?? "")),
+      failure: (error) {
+        // Revert on failure
+        emit(
+          state.copyWith(cartResponse: oldResponse, error: error.message ?? ""),
+        );
+      },
     );
   }
 
   Future<void> clearCart() async {
     await _clearCartUseCase();
-    emit(const CartState.initial());
+    emit(const CartState());
   }
 
-  String? get cartId {
-    return state.maybeWhen(
-      success: (response) => response.cartId,
-      orElse: () => null,
-    );
-  }
+  String? get cartId => state.cartResponse?.cartId;
 
   void _triggerNotification({
     required String title,

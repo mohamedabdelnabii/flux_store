@@ -6,9 +6,8 @@ import 'package:flux_store/core/theme/app_colors.dart';
 import 'package:flux_store/core/theme/app_text_styles.dart';
 import 'package:flux_store/core/widgets/custom_back_app_bar.dart';
 import 'package:flux_store/core/widgets/custom_scaffold.dart';
-import 'package:flux_store/features/auth/data/models/auth_response.dart';
 import 'package:flux_store/features/settings/presentation/cubit/settings_cubit.dart';
-import 'package:flux_store/features/settings/presentation/widgets/settings_shimmer.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ProfileDetailView extends StatefulWidget {
   static const String routeName = '/profile-detail';
@@ -32,13 +31,12 @@ class _ProfileDetailViewState extends State<ProfileDetailView> {
       appBar: CustomBackAppBar(title: "Profile Details"),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
-          return state.when(
-            initial: () => const SizedBox.shrink(),
-            loading: () => const AddressesShimmer(),
-            profileSuccess: (user) => _buildProfileContent(context, user),
-            ordersSuccess: (_) => const SizedBox.shrink(),
-            addressesSuccess: (_) => const SizedBox.shrink(),
-            error: (error) => Center(
+          final isLoading = state.isProfileLoading;
+          final user = state.userData;
+          final error = state.error;
+
+          if (error != null && user == null) {
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -74,6 +72,34 @@ class _ProfileDetailViewState extends State<ProfileDetailView> {
                   ),
                 ],
               ),
+            );
+          }
+
+          return SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: Column(
+              children: [
+                _buildInfoTile(
+                  context,
+                  "Name",
+                  user?.name ?? (isLoading ? "" : "N/A"),
+                  isLoading,
+                ),
+                vGap(16.h),
+                _buildInfoTile(
+                  context,
+                  "Email",
+                  user?.email ?? (isLoading ? "" : "N/A"),
+                  isLoading,
+                ),
+                vGap(16.h),
+                _buildInfoTile(
+                  context,
+                  "Role",
+                  user?.role ?? (isLoading ? "" : "User"),
+                  isLoading,
+                ),
+              ],
             ),
           );
         },
@@ -81,22 +107,12 @@ class _ProfileDetailViewState extends State<ProfileDetailView> {
     );
   }
 
-  Widget _buildProfileContent(BuildContext context, UserData user) {
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-      child: Column(
-        children: [
-          _buildInfoTile(context, "Name", user.name ?? "N/A"),
-          vGap(16.h),
-          _buildInfoTile(context, "Email", user.email ?? "N/A"),
-          vGap(16.h),
-          _buildInfoTile(context, "Role", user.role ?? "User"),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoTile(BuildContext context, String label, String value) {
+  Widget _buildInfoTile(
+    BuildContext context,
+    String label,
+    String value,
+    bool isLoading,
+  ) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.w),
@@ -110,7 +126,21 @@ class _ProfileDetailViewState extends State<ProfileDetailView> {
         children: [
           Text(label, style: AppTextStyles.font14GreyMedium),
           vGap(8.h),
-          Text(value, style: AppTextStyles.font16BlackBold),
+          if (isLoading && value.isEmpty)
+            Shimmer.fromColors(
+              baseColor: AppColors.grey,
+              highlightColor: AppColors.white,
+              child: Container(
+                width: 150.w,
+                height: 18.h,
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
+              ),
+            )
+          else
+            Text(value, style: AppTextStyles.font16BlackBold),
         ],
       ),
     );

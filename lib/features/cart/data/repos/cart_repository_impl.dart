@@ -50,9 +50,9 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<ApiResult<CartResponse>> addToCart(String productId) async {
+  Future<ApiResult<CartResponse>> addToCart(String productId, {int? count}) async {
     try {
-      final response = await _apiService.addToCart(productId);
+      final response = await _apiService.addToCart(productId, count);
 
       // Sync cache
       if (response.data?.products != null) {

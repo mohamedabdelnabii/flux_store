@@ -34,64 +34,71 @@ class WishlistViewBody extends StatelessWidget {
       appBar: CustomBackAppBar(title: s.wishlist),
       body: BlocBuilder<WishlistCubit, WishlistState>(
         builder: (context, state) {
-          return state.maybeWhen(
-            loading: () => const Padding(
+          final isLoading = state.isLoading;
+          final wishlistResponse = state.wishlistResponse;
+          final error = state.error;
+          final products = wishlistResponse?.data ?? [];
+
+          if (error != null && wishlistResponse == null) {
+            return Center(
+              child: Text(error.isNotEmpty ? error : s.errorOccurred),
+            );
+          }
+
+          if (isLoading && wishlistResponse == null) {
+            return const Padding(
               padding: EdgeInsets.all(20),
               child: ProductGridShimmer(),
+            );
+          }
+
+          if (wishlistResponse == null || products.isEmpty) {
+            return Center(
+              child: Text(
+                s.emptyWishlist,
+                style: AppTextStyles.font16GreyMedium,
+              ),
+            );
+          }
+
+          return GridView.builder(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppConstants.paddingHorizontal,
+              vertical: 20.h,
             ),
-            error: (error) =>
-                Center(child: Text(error.isNotEmpty ? error : s.errorOccurred)),
-            success: (wishlistResponse) {
-              final products = wishlistResponse.data ?? [];
-              if (products.isEmpty) {
-                return Center(
-                  child: Text(
-                    s.emptyWishlist,
-                    style: AppTextStyles.font16GreyMedium,
+            itemCount: products.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16.w,
+              mainAxisSpacing: 16.h,
+              childAspectRatio: 0.65,
+            ),
+            itemBuilder: (context, index) {
+              final item = products[index];
+              return Stack(
+                children: [
+                  ProductCard(
+                    image: item.imageCover ?? '',
+                    title: item.title ?? '',
+                    price: (item.price ?? 0).toDouble(),
+                    id: item.id,
                   ),
-                );
-              }
-              return GridView.builder(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppConstants.paddingHorizontal,
-                  vertical: 20.h,
-                ),
-                itemCount: products.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16.w,
-                  mainAxisSpacing: 16.h,
-                  childAspectRatio: 0.65,
-                ),
-                itemBuilder: (context, index) {
-                  final item = products[index];
-                  return Stack(
-                    children: [
-                      ProductCard(
-                        image: item.imageCover ?? '',
-                        title: item.title ?? '',
-                        price: (item.price ?? 0).toDouble(),
-                        id: item.id,
-                      ),
-                      Positioned(
-                        top: 5.h,
-                        right: 5.w,
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.black54),
-                          onPressed: () {
-                            context.read<WishlistCubit>().toggleWishlist(
-                              item.id!,
-                              true,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                  Positioned(
+                    top: 5.h,
+                    right: 5.w,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.black54),
+                      onPressed: () {
+                        context.read<WishlistCubit>().toggleWishlist(
+                          item.id!,
+                          true,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               );
             },
-            orElse: () => const SizedBox.shrink(),
           );
         },
       ),

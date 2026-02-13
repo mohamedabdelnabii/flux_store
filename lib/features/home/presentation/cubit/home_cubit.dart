@@ -8,38 +8,68 @@ part 'home_cubit.freezed.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final HomeRepo _homeRepo;
-  HomeCubit(this._homeRepo) : super(const HomeState.initial());
+  HomeCubit(this._homeRepo) : super(const HomeState());
 
-  Future<void> getHomeData() async {
-    if (!isClosed) emit(const HomeState.loading());
+  Future<void> getHomeData({bool forceRefresh = false}) async {
+    // Load cached data first for instant UI
+    if (!forceRefresh) {
+      final cachedData = _homeRepo.getCachedHomeData();
+      if (cachedData != null) {
+        final filteredResponse = _filterHomeData(cachedData);
+        if (!isClosed) {
+          emit(
+            state.copyWith(isLoading: false, homeResponse: filteredResponse),
+          );
+        }
+      }
+    }
+
+    // Then fetch fresh data in background
+    if (!isClosed) emit(state.copyWith(isLoading: true, error: null));
     final response = await _homeRepo.getHomeData();
     response.when(
       success: (homeResponse) {
-        final filteredCategories = homeResponse.categories
-            ?.where(
-              (element) =>
-                  element.name == "Men's Fashion" ||
-                  element.name == "Women's Fashion",
-            )
-            .toList();
-
-        final filteredProducts = homeResponse.products
-            ?.where(
-              (product) =>
-                  product.category?.name == "Men's Fashion" ||
-                  product.category?.name == "Women's Fashion",
-            )
-            .toList();
-
-        final filteredResponse = HomeResponse(
-          categories: filteredCategories,
-          products: filteredProducts,
-        );
-        if (!isClosed) emit(HomeState.success(filteredResponse));
+        final filteredResponse = _filterHomeData(homeResponse);
+        if (!isClosed) {
+          emit(
+            state.copyWith(isLoading: false, homeResponse: filteredResponse),
+          );
+        }
       },
       failure: (error) {
-        if (!isClosed) emit(HomeState.error(error: error.message ?? ""));
+        if (!isClosed) {
+          emit(state.copyWith(isLoading: false, error: error.message ?? ""));
+        }
       },
     );
+  }
+
+  HomeResponse _filterHomeData(HomeResponse homeResponse) {
+    final filteredCategories = homeResponse.categories
+        ?.where(
+          (element) =>
+              element.name == "Men's Fashion" ||
+              element.name == "Women's Fashion",
+        )
+        .toList();
+
+    final filteredProducts = homeResponse.products
+        ?.where(
+          (product) =>
+              product.category?.name == "Men's Fashion" ||
+              product.category?.name == "Women's Fashion",
+        )
+        .toList();
+
+    return HomeResponse(
+      categories: filteredCategories,
+      products: filteredProducts,
+    );
+  }
+
+  void selectCategory(String? id, String? name) {
+    if (!isClosed) {
+      emit(state.copyWith(selectedCategoryId: id, selectedCategoryName: name));
+    }
   }
 }

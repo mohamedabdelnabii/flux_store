@@ -354,3 +354,29 @@ class ProductDetailsShimmer extends StatelessWidget {
     );
   }
 }
+
+class DiscoverShimmer extends StatelessWidget {
+  const DiscoverShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 3,
+      separatorBuilder: (context, index) => vGap(20.h),
+      itemBuilder: (context, index) => Shimmer.fromColors(
+        baseColor: AppColors.grey,
+        highlightColor: AppColors.white,
+        child: Container(
+          height: 125.h,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.r),
+            color: AppColors.white,
+          ),
+        ),
+      ),
+    );
+  }
+}

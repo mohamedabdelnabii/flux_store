@@ -12,17 +12,23 @@ class AddressesCubit extends Cubit<AddressesState> {
     this._getAddressesUseCase,
     this._addAddressUseCase,
     this._removeAddressUseCase,
-  ) : super(const AddressesState.initial());
+  ) : super(const AddressesState());
 
   Future<void> getAddresses() async {
-    if (!isClosed) emit(const AddressesState.loading());
+    if (!isClosed) emit(state.copyWith(isLoading: true, error: null));
     final response = await _getAddressesUseCase();
     response.when(
       success: (addressResponse) {
-        if (!isClosed) emit(AddressesState.success(addressResponse));
+        if (!isClosed) {
+          emit(
+            state.copyWith(isLoading: false, addressResponse: addressResponse),
+          );
+        }
       },
       failure: (error) {
-        if (!isClosed) emit(AddressesState.error(error: error.message ?? ""));
+        if (!isClosed) {
+          emit(state.copyWith(isLoading: false, error: error.message ?? ""));
+        }
       },
     );
   }
@@ -33,25 +39,29 @@ class AddressesCubit extends Cubit<AddressesState> {
     String phone,
     String city,
   ) async {
-    if (!isClosed) emit(const AddressesState.loading());
+    if (!isClosed) emit(state.copyWith(isLoading: true, error: null));
     final response = await _addAddressUseCase(
       AddressModel(name: name, details: details, phone: phone, city: city),
     );
     response.when(
       success: (_) => getAddresses(),
       failure: (error) {
-        if (!isClosed) emit(AddressesState.error(error: error.message ?? ""));
+        if (!isClosed) {
+          emit(state.copyWith(isLoading: false, error: error.message ?? ""));
+        }
       },
     );
   }
 
   Future<void> removeAddress(String addressId) async {
-    if (!isClosed) emit(const AddressesState.loading());
+    if (!isClosed) emit(state.copyWith(isLoading: true, error: null));
     final response = await _removeAddressUseCase(addressId);
     response.when(
       success: (_) => getAddresses(),
       failure: (error) {
-        if (!isClosed) emit(AddressesState.error(error: error.message ?? ""));
+        if (!isClosed) {
+          emit(state.copyWith(isLoading: false, error: error.message ?? ""));
+        }
       },
     );
   }

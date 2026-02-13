@@ -11,24 +11,17 @@ class SearchCubit extends Cubit<SearchState> {
   final SearchRepo _searchRepo;
   Timer? _debounce;
 
-  SearchCubit(this._searchRepo) : super(const SearchState.initial());
+  SearchCubit(this._searchRepo) : super(const SearchState());
 
   void onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      // Preserve current filters if any
-      final currentState = state.maybeWhen(
-        success: (_, __, c, min, max, s) => (c: c, min: min, max: max, s: s),
-        loading: (_, c, min, max, s) => (c: c, min: min, max: max, s: s),
-        orElse: () => (c: null, min: null, max: null, s: null),
-      );
-
       search(
         query: query,
-        category: currentState.c,
-        minPrice: currentState.min,
-        maxPrice: currentState.max,
-        sort: currentState.s,
+        category: state.category,
+        minPrice: state.minPrice,
+        maxPrice: state.maxPrice,
+        sort: state.sort,
       );
     });
   }
@@ -41,12 +34,14 @@ class SearchCubit extends Cubit<SearchState> {
     String? sort,
   }) async {
     emit(
-      SearchState.loading(
+      state.copyWith(
+        isLoading: true,
         query: query,
         category: category,
         minPrice: minPrice,
         maxPrice: maxPrice,
         sort: sort,
+        error: null,
       ),
     );
 
@@ -60,19 +55,10 @@ class SearchCubit extends Cubit<SearchState> {
 
     response.when(
       success: (searchResponse) {
-        emit(
-          SearchState.success(
-            searchResponse,
-            query: query,
-            category: category,
-            minPrice: minPrice,
-            maxPrice: maxPrice,
-            sort: sort,
-          ),
-        );
+        emit(state.copyWith(isLoading: false, searchResponse: searchResponse));
       },
       failure: (error) {
-        emit(SearchState.error(error: error.message ?? ""));
+        emit(state.copyWith(isLoading: false, error: error.message ?? ""));
       },
     );
   }

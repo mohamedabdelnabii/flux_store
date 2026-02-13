@@ -13,7 +13,10 @@ abstract class CartApiService {
   Future<CartResponse> getCart();
 
   @POST(ApiConstants.cart)
-  Future<CartResponse> addToCart(@Field("productId") String productId);
+  Future<CartResponse> addToCart(
+    @Field("productId") String productId, [
+    @Field("count") int? count,
+  ]);
 
   @PUT("${ApiConstants.cart}/{id}")
   Future<CartResponse> updateCartItemQuantity(

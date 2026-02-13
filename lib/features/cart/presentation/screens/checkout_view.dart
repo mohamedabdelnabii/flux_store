@@ -10,7 +10,8 @@ import 'package:flux_store/core/widgets/custom_text_button.dart';
 import 'package:flux_store/features/addresses/data/models/address_response.dart';
 import 'package:flux_store/features/addresses/presentation/cubit/addresses_cubit.dart';
 import 'package:flux_store/features/addresses/presentation/cubit/addresses_state.dart';
-import 'package:flux_store/features/cart/presentation/cubit/cart_cubit.dart' as cart_logic;
+import 'package:flux_store/features/cart/presentation/cubit/cart_cubit.dart'
+    as cart_logic;
 import 'package:flux_store/features/cart/presentation/screens/payment_view.dart';
 import 'package:flux_store/features/addresses/presentation/screens/shipping_addresses_view.dart';
 import 'package:flux_store/generated/l10n.dart';
@@ -43,13 +44,10 @@ class _CheckoutViewState extends State<CheckoutView> {
         builder: (context, addressState) {
           // Set initial address if none selected
           if (selectedAddress == null) {
-            addressState.whenOrNull(
-              success: (resp) {
-                if (resp.data?.isNotEmpty == true) {
-                  selectedAddress = resp.data![0];
-                }
-              },
-            );
+            final resp = addressState.addressResponse;
+            if (resp != null && resp.data?.isNotEmpty == true) {
+              selectedAddress = resp.data![0];
+            }
           }
 
           return BlocBuilder<cart_logic.CartCubit, cart_logic.CartState>(
@@ -68,10 +66,7 @@ class _CheckoutViewState extends State<CheckoutView> {
     AddressesState addressState,
     cart_logic.CartState cartState,
   ) {
-    final cartResponse = cartState.maybeWhen(
-      success: (resp) => resp,
-      orElse: () => null,
-    );
+    final cartResponse = cartState.cartResponse;
 
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(24.w, 10.h, 24.w, 30.h),

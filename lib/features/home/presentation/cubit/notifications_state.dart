@@ -6,10 +6,9 @@ part 'notifications_state.freezed.dart';
 
 @freezed
 class NotificationsState with _$NotificationsState {
-  const factory NotificationsState.initial() = _Initial;
-  const factory NotificationsState.loading() = _Loading;
-  const factory NotificationsState.success(
-    List<NotificationModel> notifications,
-  ) = _Success;
-  const factory NotificationsState.error(ApiErrorModel apiErrorModel) = _Error;
+  const factory NotificationsState({
+    @Default(false) bool isLoading,
+    List<NotificationModel>? notifications,
+    ApiErrorModel? error,
+  }) = _NotificationsState;
 }

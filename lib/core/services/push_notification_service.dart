@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class PushNotificationService {
@@ -37,7 +38,7 @@ class PushNotificationService {
 
     // 2. Setup Local Notifications (Always safe to do)
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_notification');
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings();
     const InitializationSettings initializationSettings =
@@ -191,6 +192,8 @@ class PushNotificationService {
           importance: Importance.max,
           priority: Priority.high,
           showWhen: true,
+          icon: 'ic_notification',
+          color: Color(0xFF2D3B48),
         );
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,

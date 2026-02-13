@@ -57,12 +57,12 @@ class _SettingsApiService implements SettingsApiService {
   }
 
   @override
-  Future<List<OrderModel>> getOrders() async {
+  Future<OrdersResponse> getOrders() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<List<OrderModel>>(Options(
+    final _options = _setStreamType<OrdersResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -78,12 +78,10 @@ class _SettingsApiService implements SettingsApiService {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<List<dynamic>>(_options);
-    late List<OrderModel> _value;
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late OrdersResponse _value;
     try {
-      _value = _result.data!
-          .map((dynamic i) => OrderModel.fromJson(i as Map<String, dynamic>))
-          .toList();
+      _value = OrdersResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

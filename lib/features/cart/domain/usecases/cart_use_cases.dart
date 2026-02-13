@@ -11,8 +11,8 @@ class GetCartUseCase {
 class AddToCartUseCase {
   final CartRepository _repository;
   AddToCartUseCase(this._repository);
-  Future<ApiResult<CartResponse>> call(String productId) =>
-      _repository.addToCart(productId);
+  Future<ApiResult<CartResponse>> call(String productId, {int? count}) =>
+      _repository.addToCart(productId, count: count);
 }
 
 class UpdateCartQuantityUseCase {

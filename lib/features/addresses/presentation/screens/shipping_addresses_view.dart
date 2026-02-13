@@ -36,14 +36,21 @@ class _ShippingAddressesViewState extends State<ShippingAddressesView> {
       appBar: CustomBackAppBar(title: s.shippingAddresses),
       body: BlocBuilder<AddressesCubit, AddressesState>(
         builder: (context, state) {
-          return state.when(
-            initial: () => const SizedBox.shrink(),
-            loading: () => const AddressesShimmer(),
-            error: (error) => Center(child: Text(error)),
-            success: (response) {
-              final addresses = response.data ?? [];
-              if (addresses.isEmpty) {
-                return Center(
+          final isLoading = state.isLoading;
+          final response = state.addressResponse;
+          final error = state.error;
+          final addresses = response?.data ?? [];
+
+          if (error != null && response == null) {
+            return Center(child: Text(error));
+          }
+
+          return Stack(
+            children: [
+              if (isLoading && response == null)
+                const AddressesShimmer()
+              else if (response != null && addresses.isEmpty)
+                Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -106,180 +113,167 @@ class _ShippingAddressesViewState extends State<ShippingAddressesView> {
                       ),
                     ],
                   ),
-                );
-              }
-              return Stack(
-                children: [
-                  ListView.builder(
-                    padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 100.h),
-                    itemCount: addresses.length,
-                    itemBuilder: (context, index) {
-                      final address = addresses[index];
-                      final bool isSelected = selectedIndex == index;
-                      return Dismissible(
-                        key: Key(address.id ?? UniqueKey().toString()),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 20.w),
-                          margin: EdgeInsets.only(bottom: 20.h),
-                          decoration: BoxDecoration(
-                            color: AppColors.error,
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                          child: const Icon(
-                            Icons.delete,
-                            color: AppColors.white,
-                          ),
+                )
+              else if (response != null)
+                ListView.builder(
+                  padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 100.h),
+                  itemCount: addresses.length,
+                  itemBuilder: (context, index) {
+                    final address = addresses[index];
+                    final bool isSelected = selectedIndex == index;
+                    return Dismissible(
+                      key: Key(address.id ?? UniqueKey().toString()),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 20.w),
+                        margin: EdgeInsets.only(bottom: 20.h),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(16.r),
                         ),
-                        onDismissed: (_) {
+                        child: const Icon(Icons.delete, color: AppColors.white),
+                      ),
+                      onDismissed: (_) {
+                        if (address.id != null) {
                           context.read<AddressesCubit>().removeAddress(
                             address.id!,
                           );
+                        }
+                      },
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() => selectedIndex = index);
+                          Navigator.pop(context, address);
                         },
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() => selectedIndex = index);
-                            Navigator.pop(context, address);
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(bottom: 20.h),
-                            padding: EdgeInsets.all(20.w),
-                            decoration: BoxDecoration(
-                              color: AppColors.white,
-                              borderRadius: BorderRadius.circular(16.r),
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.black
-                                    : AppColors.transparent,
-                                width: 1.5.w,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.black.withValues(
-                                    alpha: 0.05,
-                                  ),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 20.h),
+                          padding: EdgeInsets.all(20.w),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(16.r),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.black
+                                  : AppColors.transparent,
+                              width: 1.5.w,
                             ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        address.name ?? "Address",
-                                        style: AppTextStyles.font16BlackBold,
-                                      ),
-                                      vGap(8.h),
-                                      Text(
-                                        "${address.details}\n${address.city}, ${address.phone}",
-                                        style: AppTextStyles.font14GrayMedium
-                                            .copyWith(
-                                              color: AppColors.black.withValues(
-                                                alpha: 0.6,
-                                              ),
-                                              height: 1.4,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Column(
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.black.withValues(alpha: 0.05),
+                                blurRadius: 15,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (isSelected)
-                                      Icon(
-                                        Icons.check_circle,
-                                        color: AppColors.black,
-                                        size: 24.sp,
-                                      ),
-                                    IconButton(
-                                      icon: Icon(Icons.edit, size: 20.sp),
-                                      onPressed: () {
-                                        showModalBottomSheet(
-                                          context: context,
-                                          isScrollControlled: true,
-                                          builder: (ctx) => BlocProvider.value(
-                                            value: context
-                                                .read<AddressesCubit>(),
-                                            child: AddAddressSheet(
-                                              address: address,
+                                    Text(
+                                      address.name ?? "Address",
+                                      style: AppTextStyles.font16BlackBold,
+                                    ),
+                                    vGap(8.h),
+                                    Text(
+                                      "${address.details}\n${address.city}, ${address.phone}",
+                                      style: AppTextStyles.font14GrayMedium
+                                          .copyWith(
+                                            color: AppColors.black.withValues(
+                                              alpha: 0.6,
                                             ),
+                                            height: 1.4,
                                           ),
-                                        ).then((_) {
-                                          if (context.mounted) {
-                                            context
-                                                .read<AddressesCubit>()
-                                                .getAddresses();
-                                          }
-                                        });
-                                      },
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  Positioned(
-                    bottom: 20.h,
-                    left: 20.w,
-                    right: 20.w,
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 52.h,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(26.r),
-                          ),
-                        ),
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (ctx) => BlocProvider.value(
-                              value: context.read<AddressesCubit>(),
-                              child: const AddAddressSheet(),
-                            ),
-                          ).then((_) {
-                            if (context.mounted) {
-                              context.read<AddressesCubit>().getAddresses();
-                            }
-                          });
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add,
-                              color: AppColors.white,
-                              size: 20.sp,
-                            ),
-                            hGap(8.w),
-                            Text(
-                              "ADD NEW ADDRESS",
-                              style: AppTextStyles.font14WhiteBold.copyWith(
-                                letterSpacing: 1,
                               ),
-                            ),
-                          ],
+                              Column(
+                                children: [
+                                  if (isSelected)
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: AppColors.black,
+                                      size: 24.sp,
+                                    ),
+                                  IconButton(
+                                    icon: Icon(Icons.edit, size: 20.sp),
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (ctx) => BlocProvider.value(
+                                          value: context.read<AddressesCubit>(),
+                                          child: AddAddressSheet(
+                                            address: address,
+                                          ),
+                                        ),
+                                      ).then((_) {
+                                        if (context.mounted) {
+                                          context
+                                              .read<AddressesCubit>()
+                                              .getAddresses();
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+                    );
+                  },
+                ),
+              Positioned(
+                bottom: 20.h,
+                left: 20.w,
+                right: 20.w,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 52.h,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(26.r),
+                      ),
+                    ),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (ctx) => BlocProvider.value(
+                          value: context.read<AddressesCubit>(),
+                          child: const AddAddressSheet(),
+                        ),
+                      ).then((_) {
+                        if (context.mounted) {
+                          context.read<AddressesCubit>().getAddresses();
+                        }
+                      });
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add, color: AppColors.white, size: 20.sp),
+                        hGap(8.w),
+                        Text(
+                          "ADD NEW ADDRESS",
+                          style: AppTextStyles.font14WhiteBold.copyWith(
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              );
-            },
+                ),
+              ),
+            ],
           );
         },
       ),

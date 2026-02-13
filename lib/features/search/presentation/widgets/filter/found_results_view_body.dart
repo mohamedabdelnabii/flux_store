@@ -24,99 +24,105 @@ class _FoundResultsViewBodyState extends State<FoundResultsViewBody> {
     final s = S.of(context);
     return BlocBuilder<SearchCubit, SearchState>(
       builder: (context, state) {
-        return state.maybeWhen(
-          loading: (query, category, minPrice, maxPrice, sort) => const Padding(
-            padding: EdgeInsets.all(20),
-            child: ProductGridShimmer(),
-          ),
-          success: (searchResponse, query, category, minPrice, maxPrice, sort) {
-            final products = searchResponse.products ?? [];
-            return SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppConstants.paddingHorizontal,
-                ),
-                child: Column(
+        final isLoading = state.isLoading;
+        final searchResponse = state.searchResponse;
+        final error = state.error;
+        final products = searchResponse?.products ?? [];
+
+        if (error != null && searchResponse == null) {
+          return Center(child: Text(error));
+        }
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppConstants.paddingHorizontal,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "${s.foundResults} (${products.length})",
-                          style: AppTextStyles.font16BlackBold,
-                        ),
-                        InkWell(
-                          onTap: () {
-                            final searchCubit = context.read<SearchCubit>();
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (_) => BlocProvider.value(
-                                value: searchCubit,
-                                child: const FilterSheet(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            height: 50.h,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.w,
-                              vertical: 10.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.greyLight,
-                              borderRadius: BorderRadius.circular(25.r),
-                              border: Border.all(color: AppColors.primaryLight),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  s.filter,
-                                  style: AppTextStyles.font14BlackMedium,
-                                ),
-                                hGap(20.w),
-                                Icon(
-                                  Icons.filter_list,
-                                  size: 20.sp,
-                                  color: AppColors.greyDark,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "${s.foundResults} (${products.length})",
+                      style: AppTextStyles.font16BlackBold,
                     ),
-                    vGap(20.h),
-                    if (products.isEmpty)
-                      Center(child: Text(s.no_search_results))
-                    else
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: products.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12.w,
-                          mainAxisSpacing: 12.h,
-                          childAspectRatio: 0.62,
+                    InkWell(
+                      onTap: () {
+                        final searchCubit = context.read<SearchCubit>();
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) => BlocProvider.value(
+                            value: searchCubit,
+                            child: const FilterSheet(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        height: 50.h,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 10.h,
                         ),
-                        itemBuilder: (context, index) {
-                          final item = products[index];
-                          return ProductCard(
-                            image: item.imageCover ?? '',
-                            title: item.title ?? '',
-                            price: (item.price ?? 0).toDouble(),
-                            id: item.id,
-                          );
-                        },
+                        decoration: BoxDecoration(
+                          color: AppColors.greyLight,
+                          borderRadius: BorderRadius.circular(25.r),
+                          border: Border.all(color: AppColors.primaryLight),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              s.filter,
+                              style: AppTextStyles.font14BlackMedium,
+                            ),
+                            hGap(20.w),
+                            Icon(
+                              Icons.filter_list,
+                              size: 20.sp,
+                              color: AppColors.greyDark,
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
                   ],
                 ),
-              ),
-            );
-          },
-          orElse: () => Center(child: Text(s.type_to_search)),
+                vGap(20.h),
+                if (isLoading && searchResponse == null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: ProductGridShimmer(),
+                  )
+                else if (searchResponse == null && !isLoading)
+                  Center(child: Text(s.type_to_search))
+                else if (products.isEmpty)
+                  Center(child: Text(s.no_search_results))
+                else
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: products.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.h,
+                      childAspectRatio: 0.62,
+                    ),
+                    itemBuilder: (context, index) {
+                      final item = products[index];
+                      return ProductCard(
+                        image: item.imageCover ?? '',
+                        title: item.title ?? '',
+                        price: (item.price ?? 0).toDouble(),
+                        id: item.id,
+                      );
+                    },
+                  ),
+              ],
+            ),
+          ),
         );
       },
     );

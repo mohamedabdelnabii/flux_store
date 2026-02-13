@@ -15,7 +15,7 @@ abstract class SettingsApiService {
   Future<AuthResponse> getProfile();
 
   @GET(ApiConstants.orders)
-  Future<List<OrderModel>> getOrders();
+  Future<OrdersResponse> getOrders();
 
   @GET(ApiConstants.addresses)
   Future<List<AddressModel>> getAddresses();

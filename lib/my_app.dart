@@ -16,6 +16,8 @@ import 'package:flux_store/features/wishlist/presentation/cubit/wishlist_cubit.d
 import 'package:flux_store/features/addresses/presentation/cubit/addresses_cubit.dart';
 import 'package:flux_store/features/orders/presentation/cubit/orders_cubit.dart';
 import 'package:flux_store/features/home/presentation/cubit/notifications_cubit.dart';
+import 'package:flux_store/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:flux_store/features/products/presentation/cubit/reviews_cubit.dart';
 import 'package:go_router/go_router.dart';
 
 class MyApp extends StatelessWidget {
@@ -50,6 +52,8 @@ class MyApp extends StatelessWidget {
               create: (context) =>
                   getIt<NotificationsCubit>()..getNotifications(),
             ),
+            BlocProvider(create: (context) => getIt<SettingsCubit>()),
+            BlocProvider(create: (context) => getIt<ReviewsCubit>()),
           ],
           child: BlocBuilder<LanguageCubit, LanguageState>(
             builder: (context, state) {

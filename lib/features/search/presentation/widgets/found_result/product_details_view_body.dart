@@ -20,8 +20,10 @@ import 'package:flux_store/features/search/presentation/widgets/product_details/
 import 'package:flux_store/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:flux_store/features/wishlist/presentation/cubit/wishlist_state.dart';
 import 'package:flux_store/generated/l10n.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flux_store/core/widgets/custom_snack_bar.dart';
+import 'package:flux_store/features/products/data/models/product_response.dart';
 
 class ProductDetailsViewBody extends StatefulWidget {
   final ProductUIModel product;
@@ -50,15 +52,14 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
 
     return BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
       builder: (context, state) {
-        if (state.status == ProductDetailsStatus.loading) {
-          return const ProductDetailsShimmer();
-        }
-
-        if (state.status == ProductDetailsStatus.error) {
-          return Center(child: Text(state.error ?? s.errorOccurred));
-        }
-
+        final isLoading = state.status == ProductDetailsStatus.loading;
         final product = state.product;
+        final error = state.error;
+
+        if (state.status == ProductDetailsStatus.error && product == null) {
+          return Center(child: Text(error ?? s.errorOccurred));
+        }
+
         final images = (product?.images != null && product!.images!.isNotEmpty)
             ? product.images!
             : [widget.product.image];
@@ -77,14 +78,11 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                     /// Images
                     BlocBuilder<WishlistCubit, WishlistState>(
                       builder: (context, state) {
-                        final bool currentIsFavorite = state.maybeWhen(
-                          success: (wishlist) =>
-                              wishlist.data?.any(
-                                (item) => item.id == widget.product.id,
-                              ) ??
-                              false,
-                          orElse: () => isFavorite,
-                        );
+                        final bool currentIsFavorite =
+                            state.wishlistResponse?.data?.any(
+                              (item) => item.id == widget.product.id,
+                            ) ??
+                            isFavorite;
                         return ProductImagesCarousel(
                           images: images,
                           isFavorite: currentIsFavorite,
@@ -92,6 +90,12 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                             context.read<WishlistCubit>().toggleWishlist(
                               widget.product.id,
                               currentIsFavorite,
+                              product: ProductModel(
+                                id: widget.product.id,
+                                title: widget.product.title,
+                                imageCover: widget.product.image,
+                                price: widget.product.price.toInt(),
+                              ),
                             );
                             setState(() => isFavorite = !currentIsFavorite);
                           },
@@ -126,12 +130,35 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                     vGap(12.h),
 
                     /// Description
-                    ProductDescriptionSection(
-                      description:
-                          product?.description ??
-                          widget.product.description ??
-                          s.noDescription,
-                    ),
+                    if (isLoading && product?.description == null)
+                      Shimmer.fromColors(
+                        baseColor: AppColors.grey,
+                        highlightColor: AppColors.white,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: List.generate(
+                            3,
+                            (index) => Padding(
+                              padding: EdgeInsets.only(bottom: 8.h),
+                              child: Container(
+                                width: double.infinity,
+                                height: 14.h,
+                                decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      ProductDescriptionSection(
+                        description:
+                            product?.description ??
+                            widget.product.description ??
+                            s.noDescription,
+                      ),
 
                     const Divider(),
 
@@ -190,7 +217,10 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                     vGap(24.h),
 
                     /// Related Products (Dynamic)
-                    RelatedProductsList(products: state.relatedProducts),
+                    if (isLoading && state.relatedProducts.isEmpty)
+                      const ProductSectionShimmer()
+                    else
+                      RelatedProductsList(products: state.relatedProducts),
                   ],
                 ),
               ),
@@ -214,6 +244,16 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                     ),
                   ),
                   onPressed: () {
+                    if (product?.quantity == 0) {
+                      CustomSnackBar.show(
+                        context,
+                        message: 'Product is out of stock',
+                        icon: Icons.error_outline,
+                        backgroundColor: AppColors.error,
+                        hasBottomNav: true,
+                      );
+                      return;
+                    }
                     if (selectedColor == null || selectedSize == null) {
                       CustomSnackBar.show(
                         context,
@@ -226,10 +266,14 @@ class _ProductDetailsViewBodyState extends State<ProductDetailsViewBody> {
                       );
                       return;
                     }
-                    context.read<CartCubit>().addToCart(widget.product.id);
+                    context.read<CartCubit>().addToCart(
+                      widget.product.id,
+                      quantity: quantity,
+                    );
                     CustomSnackBar.show(
                       context,
-                      message: '${widget.product.title} added to cart',
+                      message:
+                          '${quantity}x ${widget.product.title} added to cart',
                       icon: Icons.check_circle_outline,
                       backgroundColor: AppColors.success,
                       hasBottomNav: true,
